@@ -1,4 +1,7 @@
 from flask import Flask
+from flask_migrate import Migrate
+
+from database import db
 
 import helper.helper_general as helper_general
 import views.login as login
@@ -6,6 +9,9 @@ import views.register as register
 from helper.helper_limiter import limiter
 API_KEY_FILE = "keys.json"
 KEYS = helper_general.get_keys(API_KEY_FILE)
+from models import *
+
+migrate = Migrate()
 
 def create_app() -> Flask:
     """
@@ -20,8 +26,16 @@ def create_app() -> Flask:
 
     app.url_map.strict_slashes = False
     app.secret_key = KEYS["app_secret_key"]
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
+    db.init_app(app)
+    # handles database migrations
+    migrate.init_app(app, db)
+    with app.app_context():
+        db.create_all()  # Create database tables for our data models
+
     return app
 
 
 if __name__ == "__main__":
-    create_app().run(debug=True)
+    app = create_app()
+    app.run(debug=True)

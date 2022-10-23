@@ -1,5 +1,7 @@
 from curses.ascii import isalnum
 from typing import List, Tuple
+from helper.helper_database import create_user
+from database import db
 
 import bcrypt
 
@@ -98,7 +100,10 @@ def register_user(
         first_name: The first name input by the user.
         last_name: The last name input by the user.
     """
-    # TODO
+    user = create_user(username, hashed_pwd, first_name, last_name)
+    print(user)
+    db.session.add(user)
+    db.session.commit()
 
 
     
