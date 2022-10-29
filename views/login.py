@@ -17,7 +17,7 @@ def display_login_page() -> object:
     """
     errors = []
     if "username" in session:
-        return redirect("/profile")
+        return redirect("/main")
     else:
         if "error" in session:
             errors = session["error"]
@@ -31,7 +31,7 @@ def login() -> object:
     """
     Validates the user's login details and logs them in.
     Returns:
-        Redirection to the profile page if login was successful.
+        Redirection to the main page if login was successful.
     """
     username = request.form["username"].lower()
     password = request.form["password"]
@@ -50,7 +50,7 @@ def login() -> object:
         if helper_login.authenticate_password(password, hashed_password):
             session["username"] = username
             session["prev-page"] = request.url
-            return redirect("/profile")
+            return redirect("/main")
         else:
             session["error"] = ["login"]
             return render_template("login.html")

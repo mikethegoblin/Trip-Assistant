@@ -20,7 +20,7 @@ def register() -> object:
     if request.method == "GET":
         errors = ""
         if "username" in session:
-            return redirect("/profile")
+            return redirect("/main")
         else:
             if "error" in session:
                 errors = session["error"]
