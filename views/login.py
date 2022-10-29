@@ -3,6 +3,7 @@ Handles the view for the user login system and related functionality.
 """
 import helper.helper_login as helper_login
 from flask import Blueprint, redirect, render_template, request, session
+from database import db
 
 login_blueprint = Blueprint(
     "login", __name__, static_folder="static", template_folder="templates"
@@ -35,16 +36,11 @@ def login() -> object:
     username = request.form["username"].lower()
     password = request.form["password"]
 
-    with sqlite3.connect(DB_PATH) as conn:
-        cur = conn.cursor()
-        # Gets user from database using username.
-        cur.execute("SELECT password FROM account WHERE username=?;", (username,))
-        conn.commit()
-        row = cur.fetchone()
+    result = db.session.execute("SELECT password FROM user WHERE username=:usrname;", {"usrname": username}).first()
     # Gets the password if it exists, otherwise returns an error as the
     # username doesn't exist.
-    if row:
-        hashed_password = row[0]
+    if result:
+        hashed_password = result[0]
     else:
         session["error"] = ["login"]
         return render_template("login.html")
