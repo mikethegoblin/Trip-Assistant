@@ -17,7 +17,7 @@ def display_login_page() -> object:
     """
     errors = []
     if "username" in session:
-        return redirect("/main")
+        return redirect("/flight")
     else:
         if "error" in session:
             errors = session["error"]
@@ -50,7 +50,7 @@ def login() -> object:
         if helper_login.authenticate_password(password, hashed_password):
             session["username"] = username
             session["prev-page"] = request.url
-            return redirect("/main")
+            return redirect("/flight")
         else:
             session["error"] = ["login"]
             return render_template("login.html")
