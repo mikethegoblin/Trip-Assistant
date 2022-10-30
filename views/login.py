@@ -3,6 +3,7 @@ Handles the view for the user login system and related functionality.
 """
 import helper.helper_login as helper_login
 from flask import Blueprint, redirect, render_template, request, session
+from database import db
 
 login_blueprint = Blueprint(
     "login", __name__, static_folder="static", template_folder="templates"
@@ -16,7 +17,7 @@ def display_login_page() -> object:
     """
     errors = []
     if "username" in session:
-        return redirect("/profile")
+        return redirect("/flight")
     else:
         if "error" in session:
             errors = session["error"]
@@ -30,21 +31,16 @@ def login() -> object:
     """
     Validates the user's login details and logs them in.
     Returns:
-        Redirection to the profile page if login was successful.
+        Redirection to the main page if login was successful.
     """
     username = request.form["username"].lower()
     password = request.form["password"]
 
-    with sqlite3.connect(DB_PATH) as conn:
-        cur = conn.cursor()
-        # Gets user from database using username.
-        cur.execute("SELECT password FROM account WHERE username=?;", (username,))
-        conn.commit()
-        row = cur.fetchone()
+    result = db.session.execute("SELECT password FROM user WHERE username=:usrname;", {"usrname": username}).first()
     # Gets the password if it exists, otherwise returns an error as the
     # username doesn't exist.
-    if row:
-        hashed_password = row[0]
+    if result:
+        hashed_password = result[0]
     else:
         session["error"] = ["login"]
         return render_template("login.html")
@@ -54,7 +50,7 @@ def login() -> object:
         if helper_login.authenticate_password(password, hashed_password):
             session["username"] = username
             session["prev-page"] = request.url
-            return redirect("/profile")
+            return redirect("/flight")
         else:
             session["error"] = ["login"]
             return render_template("login.html")
