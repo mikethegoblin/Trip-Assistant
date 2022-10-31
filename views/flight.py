@@ -4,7 +4,6 @@ Available values : ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST
 """
 from amadeus import Client, Location, ResponseError
 from flask import Blueprint, make_response, redirect, render_template, request
-from isort import code
 
 flight_blueprint = Blueprint(
     "flight", __name__, static_folder="static", template_folder="templates"
