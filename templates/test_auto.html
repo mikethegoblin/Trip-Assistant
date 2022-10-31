@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>TEST AUTO</title>
+    <link rel="stylesheet" href="" />
+  </head>
+  <body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+      let request = null;
+      function handleResponse(response) {
+        let inner = "";
+        response = response["data"];
+        console.log(response);
+        if (response.length !== 0 && $("#authorInput").val() !== "") {
+          removeElements();
+          for (let airportInfo of response) {
+            let listItem = document.createElement("li");
+            listItem.classList.add("list-items");
+            // listItem.style.cursor("pointer");
+            curString = airportInfo.toString();
+            listItem.setAttribute(
+              "onclick",
+              "displayNames('" + curString + "')"
+            );
+
+            listItem.innerHTML = curString;
+            document.querySelector(".list").appendChild(listItem);
+          }
+        }
+      }
+
+      function displayNames(value) {
+        console.log(value);
+        $("#authorInput").val(value);
+        removeElements();
+      }
+      function removeElements() {
+        let items = document.querySelectorAll(".list-items");
+        items.forEach((item) => {
+          item.remove();
+        });
+      }
+      function getResults() {
+        let city = $("#authorInput").val();
+        city = encodeURIComponent(city);
+        let url = "/flight/select_place/" + city;
+        if (request != null) {
+          request.abort();
+        }
+        request = $.ajax({
+          type: "GET",
+          url: url,
+          success: handleResponse,
+        });
+      }
+      function setup() {
+        $("#authorInput").on("input", getResults);
+      }
+      $("document").ready(setup);
+    </script>
+    <form action="/flight/search_offers" method="GET" autocomplete="off">
+      <div>
+        <input type="text" id="authorInput" placeholder="LON" />
+      </div>
+      <ul class="list"></ul>
+    </form>
+  </body>
+</html>
+<style>
+  ul {
+    list-style: none;
+  }
+  .list {
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 0 0 5px 5px;
+  }
+  .list-items {
+    padding: 10px 5px;
+  }
+  .list-items:hover {
+    background-color: #dddddd;
+  }
+  form {
+    width: 75vmin;
+    height: 100%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    padding: 40px 0;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 15px 10px;
+    border: none;
+    border-bottom: 1px solid #645979;
+    outline: none;
+    border-radius: 5px 5px 0 0;
+    background-color: #ffffff;
+    font-size: 16px;
+  }
+</style>
