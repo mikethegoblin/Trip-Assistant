@@ -18,17 +18,20 @@
     <form action="/flight/search_offers">
     <label for="origin">Departing From?</label>
     <input type="text" name = origin_code id="origin">
+    <ul id="origin_list"></ul>
     <label for="destination">Where to go?</label>
     <input type="text" name = destination_code id="destination">
+    <ul id="destination_list"></ul>
     <label for="departure_date">When to Leave?</label>
     <input type="date" name = departure_date id="departure_date">
     <label for="adult">How Many Adults?</label>
     <input type="text" name = adult id="adult"><br>
     <label for="children">How Many Children</label>
     <input type="text" name = children id="children">
-  
+      <br>
     <label for="infants">How Many Infants?</label>
     <input type="text" name = infants id="infants">
+    <br>
  
     <!-- <input type="text" name = travel_class placeholder="Which travel class?"> -->
     <label for="travel_class">Which Travel Class</label>
@@ -51,7 +54,7 @@
 
     <script type="text/javascript">
       let request = null;
-      function handleResponse(response) {
+      function handleResponseOrigin(response) {
         let inner = "";
         response = response["data"];
         console.log(response);
@@ -64,16 +67,38 @@
             curString = airportInfo.toString();
             listItem.setAttribute(
               "onclick",
-              "displayNames('" + curString + "')"
+              "displayOrigin('" + curString + "')"
             );
 
             listItem.innerHTML = curString;
-            document.querySelector(".list").appendChild(listItem);
+            document.querySelector("#origin_list").appendChild(listItem);
           }
         }
       }
 
-      function displayNames(value) {
+      function handleResponseDest(response) {
+        let inner = "";
+        response = response["data"];
+        console.log(response);
+        if (response.length !== 0 && $("#destination").val() !== "") {
+          removeElements();
+          for (let airportInfo of response) {
+            let listItem = document.createElement("li");
+            listItem.classList.add("list-items");
+            // listItem.style.cursor("pointer");
+            curString = airportInfo.toString();
+            listItem.setAttribute(
+              "onclick",
+              "displayOrigin('" + curString + "')"
+            );
+
+            listItem.innerHTML = curString;
+            document.querySelector("#destination_list").appendChild(listItem);
+          }
+        }
+      }
+
+      function displayOrign(value) {
         console.log(value);
         $("#origin").val(value);
         removeElements();
@@ -84,7 +109,7 @@
           item.remove();
         });
       }
-      function getResults() {
+      function getOrigin() {
         let city = $("#origin").val();
         console.log(city);
         city = encodeURIComponent(city);
@@ -95,11 +120,28 @@
         request = $.ajax({
           type: "GET",
           url: url,
-          success: handleResponse,
+          success: handleResponseOrigin,
         });
       }
+
+      function getDest() {
+        let city = $("#destination").val();
+        console.log(city);
+        city = encodeURIComponent(city);
+        let url = "/flight/select_place/" + city;
+        if (request != null) {
+          request.abort();
+        }
+        request = $.ajax({
+          type: "GET",
+          url: url,
+          success: handleResponseDest,
+        });
+      }
+
       function setup() {
-        $("#origin").on("input", getResults);
+        $("#origin").on("input", getOrigin);
+        $("#destination").on("input", getDest);
       }
       $("document").ready(setup);
     </script>
