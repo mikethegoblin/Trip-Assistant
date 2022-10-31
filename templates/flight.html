@@ -13,21 +13,24 @@
     <link rel="stylesheet" href="" />
   </head>
   <body>
-    <h2>Flight！！！！</h2>
+    <h2>Your Journey Starts Here!</h2>
     <form action="/flight/search_offers">
-
-    <input type="text" name = origin_code placeholder="Departing from?">
+    <label for="origin">Departing From?</label>
+    <input type="text" name = origin_code id="origin">
+    <label for="destination">Where to go?</label>
+    <input type="text" name = destination_code id="destination">
+    <label for="departure_date">When to Leave?</label>
+    <input type="date" name = departure_date id="departure_date">
+    <label for="adult">How Many Adults?</label>
+    <input type="text" name = adult id="adult"><br>
+    <label for="children">How Many Children</label>
+    <input type="text" name = children id="children">
   
-    <input type="text" name = destination_code placeholder="Where to go?" >
-    
-    <input type="date" name = departure_date placeholder= "When to leave?" >
-
-    <input type="text" name = departure_date placeholder="How many adults?"><br>
-    <input type="text" name = children placeholder="How many children?">
-  
-    <input type="text" name = infants placeholder="How many infants?">
+    <label for="infants">How Many Infants?</label>
+    <input type="text" name = infants id="infants">
  
-    <input type="text" name = travel_class placeholder="Which travel class?">
+    <!-- <input type="text" name = travel_class placeholder="Which travel class?"> -->
+    <label for="travel_class">Which Travel Class</label>
     <select name="travel_class" id="travel_class">
       <option value="" disabled selected hidden>Which travel class</option>
       <option value="First Class">First Class</option>
