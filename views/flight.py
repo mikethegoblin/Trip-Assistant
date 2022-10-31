@@ -22,6 +22,10 @@ amadeus = Client(
     client_secret=API_SECRET
 )
 
+@flight_blueprint.route("/flight", methods=["GET"])
+def flight():
+    return render_template('flight.html')
+
 @flight_blueprint.route("/flight/select_place/<param>", methods=["GET"])
 def select_destination(param):
     """
@@ -51,13 +55,13 @@ def search_offers():
     """
     if request.method == "GET":
         try:
-            origin_code = request.get("originCode")
-            destination_code = request.get("destinationCode")
-            departure_date = request.get("departureDate")
-            adults=int(request.get("adults", 1))
-            children=int(request.get("children", 0))
-            infants=int(request.get("infants", 0))
-            travel_class=request.get("travelClass","")
+            origin_code = request.args.get("originCode")
+            destination_code = request.args.get("destinationCode")
+            departure_date = request.args.get("departureDate")
+            adults=int(request.args.get("adults", 1))
+            children=int(request.args.get("children", 0))
+            infants=int(request.args.get("infants", 0))
+            travel_class=request.args.get("travelClass","")
             response = amadeus.shopping.flight_offers_search.get(
                 originLocationCode=origin_code,
                 destinationLocationCode=destination_code,
@@ -66,10 +70,14 @@ def search_offers():
             context = {
                 "data": response.data
             }
-            return context
+            print(response.data)
+            print(122222)
+            return render_template('flight.html')
         except ResponseError as error:
+            print(5555555)
             print(error)
     else:
+        print(error)
         return {"error": "Invalid request method"}
 
 @flight_blueprint.route("/price_offers")
