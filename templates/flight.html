@@ -13,12 +13,13 @@
     <link rel="stylesheet" href="" />
   </head>
   <body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <h2>Your Journey Starts Here!</h2>
     <form action="/flight/search_offers">
     <label for="origin">Departing From?</label>
-    <input type="text" name = origin_code id="origin">
+    <input type="text" name = origin_code id="origin" class="locationInput">
     <label for="destination">Where to go?</label>
-    <input type="text" name = destination_code id="destination">
+    <input type="text" name = destination_code id="destination" class="locationInput">
     <label for="departure_date">When to Leave?</label>
     <input type="date" name = departure_date id="departure_date">
     <label for="adult">How Many Adults?</label>
@@ -48,6 +49,92 @@
       </p>
     <![endif]-->
 
-    <script src="" async defer></script>
+    <script type="text/javascript">
+      let request = null;
+      function handleResponse(response) {
+        let inner = "";
+        response = response["data"];
+        console.log(response);
+        if (response.length !== 0 && $(".locationInput").val() !== "") {
+          removeElements();
+          for (let airportInfo of response) {
+            let listItem = document.createElement("li");
+            listItem.classList.add("list-items");
+            // listItem.style.cursor("pointer");
+            curString = airportInfo.toString();
+            listItem.setAttribute(
+              "onclick",
+              "displayNames('" + curString + "')"
+            );
+
+            listItem.innerHTML = curString;
+            document.querySelector(".list").appendChild(listItem);
+          }
+        }
+      }
+
+      function displayNames(value) {
+        console.log(value);
+        $(".locationInput").val(value);
+        removeElements();
+      }
+      function removeElements() {
+        let items = document.querySelectorAll(".list-items");
+        items.forEach((item) => {
+          item.remove();
+        });
+      }
+      function getResults() {
+        let city = $(".locationInput").val();
+        city = encodeURIComponent(city);
+        let url = "/flight/select_place/" + city;
+        if (request != null) {
+          request.abort();
+        }
+        request = $.ajax({
+          type: "GET",
+          url: url,
+          success: handleResponse,
+        });
+      }
+      function setup() {
+        $(".locationInput").on("input", getResults);
+      }
+      $("document").ready(setup);
+    </script>
   </body>
 </html>
+<style>
+  ul {
+    list-style: none;
+  }
+  .list {
+    width: 30%;
+    background-color: #ffffff;
+    border-radius: 0 0 5px 5px;
+  }
+  .list-items {
+    padding: 10px 5px;
+  }
+  .list-items:hover {
+    background-color: #dddddd;
+  }
+  form {
+    width: 75vmin;
+    position: absolute;
+    /* transform: translate(-50%, -50%); */
+    /* top: 50%; */
+    /* left: 50%; */
+    padding: 40px 0;
+  }
+  input[type="text"] {
+    width: 30%;
+    padding: 15px 10px;
+    border: none;
+    border-bottom: 1px solid #645979;
+    outline: none;
+    border-radius: 5px 5px 0 0;
+    background-color: #ffffff;
+    font-size: 16px;
+  }
+</style>
