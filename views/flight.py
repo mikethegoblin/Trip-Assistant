@@ -4,14 +4,14 @@ Available values : ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST
 """
 from amadeus import Client, Location, ResponseError
 from flask import Blueprint, make_response, redirect, render_template, request
-from isort import code
+from helper.helper_flight import convert_flight_info
 
 flight_blueprint = Blueprint(
     "flight", __name__, static_folder="static", template_folder="templates"
 )
 
-API_KEY="oXlnToPyJPj7FqjmXdOGNz1n5d0wEi8C"
-API_SECRET="NC1ifmJTqmPLKHIs"
+API_KEY="RRU3luwDGuknU0Sy16iUXX52G7qCeDnU"
+API_SECRET="ASSQQlF8qWj5Vt3F"
 
 amadeus = Client(
     client_id=API_KEY,
@@ -47,34 +47,35 @@ def test():
     return render_template("test_auto.html")
 
 
-@flight_blueprint.route("/flight/search_offers")
+@flight_blueprint.route("/flight/search_offers", methods=["GET"])
 def search_offers():
     """
     allow them to search for flights between those locations on the dates they want to travel.
     """
     if request.method == "GET":
         try:
-            origin_code = request.get("originCode")
-            destination_code = request.get("destinationCode")
-            departure_date = request.get("departureDate")
-            adults=int(request.get("adults", 1))
-            children=int(request.get("children", 0))
-            infants=int(request.get("infants", 0))
-            travel_class=request.get("travelClass","")
-            response = amadeus.shopping.flight_offers_search.get(
-                originLocationCode=origin_code,
-                destinationLocationCode=destination_code,
-                departure_date=departure_date,
-                adults=adults,
-                children=children,
-                infants=infants,
-                travel_class=travel_class
-                )
+            origin_code = request.args.get("originCode")
+            destination_code = request.args.get("destinationCode")
+            departure_date = request.args.get("departureDate")
+            return_date = request.args.get("returnDate")
+            adults=int(request.args.get("adults", 1))
+            children=int(request.args.get("children", 0))
+            infants=int(request.args.get("infants", 0))
+            travel_class=request.args.get("travelClass", "")
+            print('fadagsdgdgadfasgdsagadsgd------------------------')
+            result = amadeus.shopping.flight_offers_search.get(
+        originLocationCode='MAD',
+        destinationLocationCode='ATH',
+        departureDate='2022-11-01',
+        adults=1)
+            print("fasdgfhaoshfiadlgdagadsfjdsgioasghadsh")
+            print(result, "hi I am the result")
             context = {
-                "data": response.data
+                "data": result.data
             }
-            
-            return context
+            # flightInfo = convert_flight_info(context)
+            return make_response({"data":result})
+            return render_template("flight_display.html", roundTrip=flightInfo)
         except ResponseError as error:
             print(error)
     else:
