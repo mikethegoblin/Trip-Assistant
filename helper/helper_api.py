@@ -2,6 +2,7 @@
 This file contains util functions that perform API calls
 """
 import json
+import sys
 
 import requests
 
@@ -23,53 +24,71 @@ def get_access_token():
     access_token = json.loads(response.text)["access_token"]
     return access_token
 
-def get_airport_info(keyword):
+def get_airport_info(parameters):
     '''
     gets related airport information based on keyword
     the keyword is going to be part of a city name
     ex. if given new as keyword, the API may return airports located in New York
 
     :param keyword: a query parameter for the airport search
+    :return data: response data in dictionary format
     '''
     # get access token
     access_token = get_access_token()
-    base_url = "https://test.api.amadeus.com/v1/reference-data/locations/cities"
-    params = {
-        "keyword": keyword,
-        "max": 10
-    }
+    base_url = "https://test.api.amadeus.com/v1/reference-data/locations"
     headers = {
         'Authorization': 'Bearer ' + str(access_token)
     }
-
-    response = requests.get(base_url, params=params, headers=headers)
-    # print(response)
-    data = json.loads(response.text)
-    return data
+    data = {}
+    status = ""
+    try:
+        response = requests.get(base_url, params=parameters, headers=headers)
+        # print(response)
+        data = json.loads(response.text)
+        status = "success"
+    except requests.exceptions.HTTPError as err:
+        status = "fail"
+    return data, status
 
 def get_ticket_info(parameters):
+    ''' 
+    fetches ticket options based on the input parameters
+
+    :param parameters: a dictionary containing all query parameters
+    :return data: response data in dictionary format
+    '''
 
     access_token = get_access_token()
     base_url = "https://test.api.amadeus.com/v2/shopping/flight-offers"
     headers = {
         'Authorization': 'Bearer ' + str(access_token)
     }
-
-    response = requests.get(base_url, headers=headers, params=parameters)
-    data = json.loads(response.text)
-    return data
+    data = {}
+    status = ""
+    try:
+        response = requests.get(base_url, headers=headers, params=parameters)
+        data = json.loads(response.text)
+        status = "success"
+    except requests.exceptions.HTTPError as err:
+        status = "fail"
+    return data, status
 
 
 # def test():
-#     # resp = get_airport_info("new")
-#     # print(resp.text)
 #     parameters = {
-#         "originLocationCode": "BOS",
-#         "destinationLocationCode": "JFK",
-#         "departureDate": "2022-11-07",
-#         "adults": 1
+#         "keyword": "new",
+#         "subType": "AIRPORT"
 #     }
-#     resp = get_ticket_info(parameters)
+#     resp, stat = get_airport_info(parameters)
+#     print(resp)
+#     print(stat)
+#     # parameters = {
+#     #     "originLocationCode": "BOS",
+#     #     "destinationLocationCode": "JFK",
+#     #     "departureDate": "2022-11-07",
+#     #     "adults": 1
+#     # }
+#     # resp = get_ticket_info(parameters)
 
 # if __name__ == "__main__":
 #     test()
