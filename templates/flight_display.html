@@ -14,20 +14,24 @@
     <table>
       <tr>
         <th>OutBound</th>
+        {% if multi %}
         <th>Return</th>
+        {% endif %}
         <th>Price</th>
         <th>numberOfBookableSeats</th>
       </tr>
-      {% for d in roundTrip %}
+      {% for d in flight_offers %}
       <tr>
         <td>
           {{d["departTrip"]["duration"]}}, {{d["departTrip"]["trip"]}},
-          {{d["departTrip"]["numberOfStops"]}}
+          {{d["departTrip"]["numberOfStops"]}} stops
         </td>
+        {% if multi %}
         <td>
           {{d["arrivalTrip"]["duration"]}}, {{d["arrivalTrip"]["trip"]}},
-          {{d["arrivalTrip"]["numberOfStops"]}}
+          {{d["arrivalTrip"]["numberOfStops"]}} stops
         </td>
+        {% endif %}
         <td>{{d["price"]}}</td>
         <td>{{d["numberOfBookableSeats"]}}</td>
       </tr>

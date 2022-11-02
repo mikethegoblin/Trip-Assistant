@@ -4,6 +4,7 @@ Available values : ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST
 """
 from amadeus import Client, Location, ResponseError
 from flask import Blueprint, make_response, redirect, render_template, request
+from helper.helper_api import *
 from helper.helper_flight import convert_flight_info
 
 flight_blueprint = Blueprint(
@@ -31,25 +32,19 @@ def select_destination(param):
     if request.method == "GET":
         try:
             print(param)
-            response=amadeus.reference_data.locations.get(
-                keyword=param, subType=Location.ANY
-            )
+            response, _ =get_airport_info({"params": param})
             # display at most five list
-            address_information = response.data[:5]
+            address_information = response.get("data", [])[:5]
+            print(address_information)
             locations = []
             for location_info in address_information:
-                locations.append([location_info["iataCode"], location_info["name"],location_info["address"]["cityName"]])
+                locations.append([location_info.get("iataCode", ""), location_info["address"]["cityName"]], location_info["adress"]["countryName"])
             print(locations)
             return make_response({"data":locations})
         except ResponseError as error:
             print(error)
     else:
         return {"error": "Invalid request method"}
-
-@flight_blueprint.route("/test")
-def test():
-    return render_template("test_auto.html")
-
 
 @flight_blueprint.route("/flight/search_offers", methods=["GET"])
 def search_offers():
@@ -58,30 +53,23 @@ def search_offers():
     """
     if request.method == "GET":
         try:
-            origin_code = request.args.get("originCode")
-            destination_code = request.args.get("destinationCode")
-            departure_date = request.args.get("departureDate")
-            return_date = request.args.get("returnDate")
-            adults=int(request.args.get("adults", 1))
-            children=int(request.args.get("children", 0))
-            infants=int(request.args.get("infants", 0))
-            travel_class=request.args.get("travelClass", "")
-            print('fadagsdgdgadfasgdsagadsgd------------------------')
-            result = amadeus.shopping.flight_offers_search.get(
-        originLocationCode='MAD',
-        destinationLocationCode='ATH',
-        departureDate='2022-11-01',
-        adults=1)
-            print("fasdgfhaoshfiadlgdagadsfjdsgioasghadsh")
-            print(result, "hi I am the result")
-            context = {
-                "data": result.data
-            }
-            # flightInfo = convert_flight_info(context)
-            return make_response({"data":result})
-            return render_template("flight_display.html", roundTrip=flightInfo)
+            kwargs = {'originLocationCode' : request.args.get("originLocationCode"),
+            'destinationLocationCode' : request.args.get("destinationLocationCode"),
+            'departureDate' : request.args.get("departureDate"),
+            'adults':int(request.args.get("adults", 1)),
+            "max": 10}
+            if request.args.get("returnDate", ""):
+                kwargs.update({'returnDate' :request.args.get("returnDate", "")})
+            if int(request.args.get("children", 0)):
+                kwargs.update({"chilren": int(request.args.get("children", 0))})
+            if int(request.args.get("infants", 0)):
+                kwargs.update({"infants": int(request.args.get("infants", 0))})
+            if request.args.get("travelClass", ""):
+                kwargs.update({'travelClass':request.args.get("travelClass", "")})
+            flights, _ = get_ticket_info(kwargs)
+            flight_offers = convert_flight_info(flights.get("data", []))
+            return render_template("flight_display.html", flight_offers=flight_offers, oneway = request.args.get("returnDate", "") == "")
         except ResponseError as error:
-            print(5555555)
             print(error)
     else:
         print(error)
@@ -99,3 +87,21 @@ def price_offer():
     else:
         return {"error":"Invalid request method"}
 
+@flight_blueprint.route("/trip_purpose_prediction", methods = ["GET"])
+def predict_trip():
+    """
+    If a traveler has shown interest in Berlin, what other destinations would he/she like?
+    """
+    kwargs = {'originLocationCode': request.args.get('Origin'),
+            'destinationLocationCode': request.args.get('Destination'),
+            'departureDate': request.args.get('Departuredate'),
+            'returnDate': request.args.get('Returndate')}
+    
+    try:
+        purpose = amadeus.travel.predictions.trip_purpose.get(
+            **kwargs).data['result']
+
+    except ResponseError as error:
+        print(error)
+        return render_template(request, 'home.html', {})
+    return render_template(request, 'home.html', {'res': purpose})

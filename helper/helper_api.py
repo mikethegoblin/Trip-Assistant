@@ -1,8 +1,9 @@
 """
 This file contains util functions that perform API calls
 """
-import requests
 import json
+
+import requests
 
 API_KEY="RRU3luwDGuknU0Sy16iUXX52G7qCeDnU"
 API_SECRET="ASSQQlF8qWj5Vt3F"
@@ -55,7 +56,6 @@ def get_ticket_info(parameters):
     }
 
     response = requests.get(base_url, headers=headers, params=parameters)
-    print(response.text)
     data = json.loads(response.text)
     return data
 

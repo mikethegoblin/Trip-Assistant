@@ -1,13 +1,13 @@
 from flask import Flask
 from flask_migrate import Migrate
 
-from database import db
-
 import helper.helper_general as helper_general
+import views.flight as flight
 import views.login as login
 import views.register as register
-import views.flight as flight
+from database import db
 from helper.helper_limiter import limiter
+
 API_KEY_FILE = "keys.json"
 KEYS = helper_general.get_keys(API_KEY_FILE)
 from models import *
@@ -40,4 +40,4 @@ def create_app() -> Flask:
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True)
+    app.run(host = "0.0.0.0", port = 5111, debug=True)
