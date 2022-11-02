@@ -18,6 +18,10 @@ amadeus = Client(
     client_secret=API_SECRET
 )
 
+@flight_blueprint.route("/flight", methods=["GET"])
+def flight():
+    return render_template('flight.html')
+
 @flight_blueprint.route("/flight/select_place/<param>", methods=["GET"])
 def select_destination(param):
     """
@@ -77,8 +81,10 @@ def search_offers():
             return make_response({"data":result})
             return render_template("flight_display.html", roundTrip=flightInfo)
         except ResponseError as error:
+            print(5555555)
             print(error)
     else:
+        print(error)
         return {"error": "Invalid request method"}
 
 @flight_blueprint.route("/price_offers")
