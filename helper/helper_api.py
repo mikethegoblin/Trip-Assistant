@@ -3,6 +3,7 @@ This file contains util functions that perform API calls
 """
 import requests
 import json
+import sys
 
 API_KEY="RRU3luwDGuknU0Sy16iUXX52G7qCeDnU"
 API_SECRET="ASSQQlF8qWj5Vt3F"
@@ -29,6 +30,7 @@ def get_airport_info(keyword):
     ex. if given new as keyword, the API may return airports located in New York
 
     :param keyword: a query parameter for the airport search
+    :return data: response data in dictionary format
     '''
     # get access token
     access_token = get_access_token()
@@ -40,24 +42,39 @@ def get_airport_info(keyword):
     headers = {
         'Authorization': 'Bearer ' + str(access_token)
     }
-
-    response = requests.get(base_url, params=params, headers=headers)
-    # print(response)
-    data = json.loads(response.text)
-    return data
+    data = {}
+    status = ""
+    try:
+        response = requests.get(base_url, params=params, headers=headers)
+        # print(response)
+        data = json.loads(response.text)
+        status = "success"
+    except requests.exceptions.HTTPError as err:
+        status = "fail"
+    return data, status
 
 def get_ticket_info(parameters):
+    ''' 
+    fetches ticket options based on the input parameters
+
+    :param parameters: a dictionary containing all query parameters
+    :return data: response data in dictionary format
+    '''
 
     access_token = get_access_token()
     base_url = "https://test.api.amadeus.com/v2/shopping/flight-offers"
     headers = {
         'Authorization': 'Bearer ' + str(access_token)
     }
-
-    response = requests.get(base_url, headers=headers, params=parameters)
-    print(response.text)
-    data = json.loads(response.text)
-    return data
+    data = {}
+    status = ""
+    try:
+        response = requests.get(base_url, headers=headers, params=parameters)
+        data = json.loads(response.text)
+        status = "success"
+    except requests.exceptions.HTTPError as err:
+        status = "fail"
+    return data, status
 
 
 # def test():
