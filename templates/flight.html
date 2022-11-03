@@ -52,17 +52,17 @@
     <![endif]-->
 
     <script type="text/javascript">
-      let request = null;
+      let request_origin = null;
+      let request_dest = null;
       function handleResponseOrigin(response) {
         let inner = "";
         response = response["data"];
         console.log(response);
         if (response.length !== 0 && $("#origin").val() !== "") {
-          removeElements();
+          removeElementsOrigin();
           for (let airportInfo of response) {
             let listItem = document.createElement("li");
-            listItem.classList.add("list-items");
-            // listItem.style.cursor("pointer");
+            listItem.classList.add("list-items-origin");
             curString = airportInfo.toString();
             listItem.setAttribute(
               "onclick",
@@ -80,15 +80,14 @@
         response = response["data"];
         console.log(response);
         if (response.length !== 0 && $("#destination").val() !== "") {
-          removeElements();
+          removeElementsDest();
           for (let airportInfo of response) {
             let listItem = document.createElement("li");
-            listItem.classList.add("list-items");
-            // listItem.style.cursor("pointer");
+            listItem.classList.add("list-items-dest");
             curString = airportInfo.toString();
             listItem.setAttribute(
               "onclick",
-              "displayOrigin('" + curString + "')"
+              "displayDest('" + curString + "')"
             );
 
             listItem.innerHTML = curString;
@@ -102,23 +101,44 @@
         $("#origin").val(value);
         removeElements();
       }
-      function removeElements() {
-        let items = document.querySelectorAll(".list-items");
-        console.log(items);
+
+      function displayDest(value) {
+        $('#destination').val(value);
+        removeElemets();
+      }
+
+      function removeElementsOrigin() {
+        let items = document.querySelectorAll(".list-items-origin");
+        // console.log(items);
         items.forEach((item) => {
           console.log(item);
           item.remove();
         });
       }
+
+      function removeElementsDest() {
+        let items = document.querySelectorAll(".list-items-dest");
+        // console.log(items);
+        items.forEach((item) => {
+          console.log(item);
+          item.remove();
+        });
+      }
+
       function getOrigin() {
         let city = $("#origin").val();
-        console.log(city);
+        // console.log(city);
+        if (!city) {
+          // console.log("string is empty");
+          removeElementsOrigin()
+          return;
+        }
         city = encodeURIComponent(city);
         let url = "/flight/select_place/" + city;
-        if (request != null) {
-          request.abort();
+        if (request_origin != null) {
+          request_origin.abort();
         }
-        request = $.ajax({
+        request_origin = $.ajax({
           type: "GET",
           url: url,
           success: handleResponseOrigin,
@@ -127,13 +147,18 @@
 
       function getDest() {
         let city = $("#destination").val();
-        console.log(city);
+        // console.log(city);
+        if (!city) {
+          removeElementsDest();
+          // console.log("string is empty");
+          return;
+        }
         city = encodeURIComponent(city);
         let url = "/flight/select_place/" + city;
-        if (request != null) {
-          request.abort();
+        if (request_dest != null) {
+          request_dest.abort();
         }
-        request = $.ajax({
+        request_dest = $.ajax({
           type: "GET",
           url: url,
           success: handleResponseDest,
