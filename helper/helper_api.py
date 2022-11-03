@@ -1,9 +1,10 @@
 """
 This file contains util functions that perform API calls
 """
-import requests
 import json
 import sys
+
+import requests
 
 API_KEY="RRU3luwDGuknU0Sy16iUXX52G7qCeDnU"
 API_SECRET="ASSQQlF8qWj5Vt3F"
