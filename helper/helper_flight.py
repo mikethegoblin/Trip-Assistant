@@ -4,7 +4,6 @@ from typing import Dict, List
 
 def convert_flight_info(flight_info: List[Dict], multi=False) -> Dict:
     result = []
-    print(flight_info[0])
     for flight in flight_info:
         numberOfBookableSeats=flight["numberOfBookableSeats"]
         price_label = flight["price"]["total"] + " " + flight["price"]["currency"]
