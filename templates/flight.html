@@ -16,16 +16,16 @@
     <h2>Your Journey Starts Here!</h2>
     <form action="/flight/search_offers">
       <label for="origin">Departing From?</label>
-      <input type="text" name="origin_code" id="origin" />
+      <input type="text" name="originLocationCode" id="origin" />
       <ul id="origin_list"></ul>
       <label for="destination">Where to go?</label>
-      <input type="text" name="destination_code" id="destination" />
+      <input type="text" name="destinationLocationCode" id="destination" />
       <ul id="destination_list"></ul>
       <label for="departure_date">When to Leave?</label>
-      <input type="date" name="departure_date" id="departure_date" />
+      <input type="date" name="departureDate" id="departure_date" />
       <br/>
       <label for="adult">How Many Adults?</label>
-      <input type="text" name="adult" id="adult" /><br />
+      <input type="text" name="adults" id="adult" /><br />
       <label for="children">How Many Children</label>
       <input type="text" name="children" id="children" />
       <br />
@@ -35,7 +35,7 @@
 
       <!-- <input type="text" name = travel_class placeholder="Which travel class?"> -->
       <label for="travel_class">Which Travel Class</label>
-      <select name="travel_class" id="travel_class">
+      <select name="travelClass" id="travel_class">
         <option value="" disabled selected hidden>Which travel class</option>
         <option value="First Class">First Class</option>
         <option value="Business Class">Business Class</option>

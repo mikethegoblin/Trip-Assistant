@@ -1,6 +1,11 @@
 from dbm import dumb
 from typing import Dict, List
 
+TRAVEL_CLASS_MAP = {
+    "Economy Class": "ECONOMY",
+    "FIRST Class": "FIRST",
+    "Business Class": "BUSINESS"
+}
 
 def convert_flight_info(flight_info: List[Dict], multi=False) -> Dict:
     result = []
@@ -32,8 +37,12 @@ def convert_flight_info(flight_info: List[Dict], multi=False) -> Dict:
             )
 
         result.append(trip_info)
-    
+    print(result[0])
     return result
+
+
+def parse_class(travel_class):
+    return TRAVEL_CLASS_MAP[travel_class]
                 
 
         
