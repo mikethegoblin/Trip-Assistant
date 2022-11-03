@@ -57,9 +57,9 @@ def search_offers():
             "max": 10}
             if request.args.get("returnDate", ""):
                 kwargs.update({'returnDate' :request.args.get("returnDate", "")})
-            if int(request.args.get("children", 0)):
+            if request.args.get("children", ""):
                 kwargs.update({"chilren": int(request.args.get("children", 0))})
-            if int(request.args.get("infants", 0)):
+            if request.args.get("infants", ""):
                 kwargs.update({"infants": int(request.args.get("infants", 0))})
             if request.args.get("travelClass", ""):
                 kwargs.update({'travelClass':request.args.get("travelClass", "")})
