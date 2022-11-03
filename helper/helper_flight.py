@@ -7,6 +7,12 @@ TRAVEL_CLASS_MAP = {
     "Business Class": "BUSINESS"
 }
 
+TRAVEL_CLASS_MAP = {
+    "Economy": "ECONOMY",
+    "First": "FIRST",
+    "Business": "BUSINESS"
+}
+
 def convert_flight_info(flight_info: List[Dict], multi=False) -> Dict:
     result = []
     for flight in flight_info:

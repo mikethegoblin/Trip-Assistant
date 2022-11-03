@@ -58,15 +58,17 @@ def search_offers():
             if request.args.get("returnDate", ""):
                 kwargs.update({'returnDate' :request.args.get("returnDate", "")})
             if request.args.get("children", ""):
-                kwargs.update({"chilren": int(request.args.get("children", 0))})
+                kwargs.update({"children": int(request.args.get("children", 0))})
             if request.args.get("infants", ""):
                 kwargs.update({"infants": int(request.args.get("infants", 0))})
             if request.args.get("travelClass", ""):
                 travel_class = parse_class(request.args.get("travelClass", ""))
                 kwargs.update({'travelClass': travel_class})
+            # print("kwargs = ", kwargs)
             flights, _ = get_ticket_info(kwargs)
-            flight_offers = convert_flight_info(flights.get("data", []), request.args.get("returnDate", "") != "")
-            return render_template("flight_display.html", flight_offers=flight_offers, multi = request.args.get("returnDate", "") != "")
+            # print(flights)
+            flight_offers = convert_flight_info(flights.get("data", []))
+            return render_template("flight_display.html", flight_offers=flight_offers, oneway = request.args.get("returnDate", "") == "")
         except ResponseError as error:
             print(error)
     else:
