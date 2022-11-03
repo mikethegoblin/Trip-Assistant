@@ -88,7 +88,7 @@
             curString = airportInfo.toString();
             listItem.setAttribute(
               "onclick",
-              "displayOrigin('" + curString + "')"
+              "displayDest('" + curString + "')"
             );
 
             listItem.innerHTML = curString;
@@ -102,6 +102,12 @@
         $("#origin").val(value);
         removeElements();
       }
+
+      function displayDest(value) {
+        $('#destination').val(value);
+        removeElemets();
+      }
+
       function removeElements() {
         let items = document.querySelectorAll(".list-items");
         console.log(items);
@@ -113,6 +119,9 @@
       function getOrigin() {
         let city = $("#origin").val();
         console.log(city);
+        if (!city) {
+          return;
+        }
         city = encodeURIComponent(city);
         let url = "/flight/select_place/" + city;
         if (request != null) {
@@ -128,6 +137,9 @@
       function getDest() {
         let city = $("#destination").val();
         console.log(city);
+        if (!city) {
+          return;
+        }
         city = encodeURIComponent(city);
         let url = "/flight/select_place/" + city;
         if (request != null) {
