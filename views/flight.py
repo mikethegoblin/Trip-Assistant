@@ -31,15 +31,12 @@ def select_destination(param):
     """
     if request.method == "GET":
         try:
-            print(param)
-            response, _ =get_airport_info({"params": param})
+            response, _ =get_airport_info({"keyword": param, "subType": "AIRPORT"})
             # display at most five list
             address_information = response.get("data", [])[:5]
-            print(address_information)
             locations = []
             for location_info in address_information:
-                locations.append([location_info.get("iataCode", ""), location_info["address"]["cityName"]], location_info["adress"]["countryName"])
-            print(locations)
+                locations.append([location_info.get("iataCode", ""), location_info["address"]["cityName"], location_info["address"]["countryName"]])
             return make_response({"data":locations})
         except ResponseError as error:
             print(error)
