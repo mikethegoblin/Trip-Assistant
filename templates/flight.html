@@ -23,6 +23,7 @@
       <ul id="destination_list"></ul>
       <label for="departure_date">When to Leave?</label>
       <input type="date" name="departure_date" id="departure_date" />
+      <br/>
       <label for="adult">How Many Adults?</label>
       <input type="text" name="adult" id="adult" /><br />
       <label for="children">How Many Children</label>
@@ -66,7 +67,7 @@
             curString = airportInfo.toString();
             listItem.setAttribute(
               "onclick",
-              "displayOrigin('" + curString + "')"
+              "displayOrigin('" + airportInfo[0] + "')"
             );
 
             listItem.innerHTML = curString;
@@ -87,7 +88,7 @@
             curString = airportInfo.toString();
             listItem.setAttribute(
               "onclick",
-              "displayDest('" + curString + "')"
+              "displayDest('" + airportInfo[0] + "')"
             );
 
             listItem.innerHTML = curString;
@@ -99,12 +100,12 @@
       function displayOrigin(value) {
         console.log(value);
         $("#origin").val(value);
-        removeElements();
+        removeElementsOrigin();
       }
 
       function displayDest(value) {
         $('#destination').val(value);
-        removeElemets();
+        removeElementsDest();
       }
 
       function removeElementsOrigin() {
