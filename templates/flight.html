@@ -9,33 +9,37 @@
     <title></title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="" />
+    <link rel="stylesheet" href="static/flight.css" />
   </head>
   <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <h2>Your Journey Starts Here!</h2>
+    <!-- <h2>Your Journey Starts Here!</h2>
     <form action="/flight/search_offers">
+      <div>
+        <input type="radio" class="tripType" value="One Way" checked>
+        <input type="radio" class="tripType" value="Round Trip">
+      </div>
       <label for="origin">Departing From?</label>
-      <input type="text" name="origin_code" id="origin" />
+      <input type="text" name="originLocationCode" id="origin" />
       <ul id="origin_list"></ul>
       <label for="destination">Where to go?</label>
-      <input type="text" name="destination_code" id="destination" />
+      <input type="text" name="destinationLocationCode" id="destination" />
       <ul id="destination_list"></ul>
       <label for="departure_date">When to Leave?</label>
-      <input type="date" name="departure_date" id="departure_date" />
+      <input type="date" name="departureDate" id="departure_date" />
       <br/>
       <label for="adult">How Many Adults?</label>
-      <input type="text" name="adult" id="adult" /><br />
+      <input type="text" name="adults" id="adult" /><br />
       <label for="children">How Many Children</label>
       <input type="text" name="children" id="children" />
       <br />
       <label for="infants">How Many Infants?</label>
       <input type="text" name="infants" id="infants" />
-      <br />
+      <br /> -->
 
       <!-- <input type="text" name = travel_class placeholder="Which travel class?"> -->
-      <label for="travel_class">Which Travel Class</label>
-      <select name="travel_class" id="travel_class">
+      <!-- <label for="travel_class">Which Travel Class</label>
+      <select name="travelClass" id="travel_class">
         <option value="" disabled selected hidden>Which travel class</option>
         <option value="First Class">First Class</option>
         <option value="Business Class">Business Class</option>
@@ -43,7 +47,110 @@
       </select>
       <br />
       <input type="submit" value="submit" />
-    </form>
+    </form> -->
+    <div id="search-form">
+      <div id="header">
+        <h1>SEARCH FOR CHEAP FLIGHTS</h1>
+      </div>
+      <section>
+        <div class="flight" id="flightbox">
+          
+          <form id="flight-form" action="/flight/search_offers" method="GET">
+          <!-- TRIP TYPE -->
+          <div id="flight-type">
+            <div class="info-box">
+              <input type="radio" name="flight-type" value="Return" id="return" checked />
+              <label for="return">RETURN</label>
+            </div>
+            <div class="info-box">
+              <input type="radio" name="flight-type" value="Single" id="one-way" />
+              <label for="one-way">ONE WAY</label>
+            </div>
+          </div>
+          
+          <!-- FROM/TO -->
+          <div id="flight-depart">
+            <div class="info-box">
+              <label for="">LEAVING FROM</label>
+              <input type="text" id="dep-from" name="originLocationCode"/>
+              <div id="depart-res">
+                <ul id="origin_list"></ul>
+              </div>
+            </div>
+            <div class="info-box" id="arrive-box">
+              <label for="">ARRIVING AT</label>
+              <input type="text" id="dep-to" name="destinationLocationCode"/>
+              <div id="arrive-res">
+                <ul id="destination_list"></ul>
+              </div>
+            </div>
+          </div>
+          
+          <!-- FROM/TO -->
+          <div id="flight-dates">
+            <div class="info-box">
+              <label for="">LEAVING ON</label>
+              <input type="text" id="leave-date" name="departureDate" readonly />
+            </div>
+            <div class="info-box" id="return-box">
+              <label for="">RETURNING ON</label>
+              <input type="text" id="return-date" name="returnDate" readonly />
+            </div>
+          </div>
+          
+          <!-- PASSENGER INFO -->
+          <div id="flight-info">
+            <div class="info-box">
+              <label for="adults">ADULTS</label>
+              <select name="adults" id="adults">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </div>
+            <div class="info-box">
+              <label for="children">CHILDREN</label>
+              <select name="children" id="children">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="0">2</option>
+                <option value="3">3</option>
+              </select>
+            </div>
+            <div class="info-box">
+              <label for="class-type">CLASS</label>
+              <select name="travelClass" id="class-type">
+                <option value="Economy">ECONOMY</option>
+                <option value="Business">BUSINESS</option>
+                <option value="First">FIRST CLASS</option>
+              </select>
+            </div>
+        </div>
+        
+          <!-- SEARCH BUTTON -->
+        <div id="flight-search">
+          <div class="info-box">
+            <input type="submit" id="search-flight" value="SEARCH FLIGHTS"/>
+          </div>
+        </div>
+          
+        </form> 
+        </div>
+      </section>
+    
+      <div id="calender">
+        <div class="nav">
+          <button id="prev"><</button>
+          <p><span id="month"></span>
+            <span id="year"></span></p>
+          <button id="next">></button>
+        </div>
+        <table id="cal"></table>
+        </div>
+        
+  </div>
+  <div id="confirm"></div>
 
     <!--[if lt IE 7]>
       <p class="browsehappy">
@@ -59,7 +166,7 @@
         let inner = "";
         response = response["data"];
         console.log(response);
-        if (response.length !== 0 && $("#origin").val() !== "") {
+        if (response.length !== 0 && $("#dep-from").val() !== "") {
           removeElementsOrigin();
           for (let airportInfo of response) {
             let listItem = document.createElement("li");
@@ -80,7 +187,7 @@
         let inner = "";
         response = response["data"];
         console.log(response);
-        if (response.length !== 0 && $("#destination").val() !== "") {
+        if (response.length !== 0 && $("#dep-to").val() !== "") {
           removeElementsDest();
           for (let airportInfo of response) {
             let listItem = document.createElement("li");
@@ -99,12 +206,12 @@
 
       function displayOrigin(value) {
         console.log(value);
-        $("#origin").val(value);
+        $("#dep-from").val(value);
         removeElementsOrigin();
       }
 
       function displayDest(value) {
-        $('#destination').val(value);
+        $('#dep-to').val(value);
         removeElementsDest();
       }
 
@@ -127,7 +234,7 @@
       }
 
       function getOrigin() {
-        let city = $("#origin").val();
+        let city = $("#dep-from").val();
         // console.log(city);
         if (!city) {
           // console.log("string is empty");
@@ -147,8 +254,8 @@
       }
 
       function getDest() {
-        let city = $("#destination").val();
-        // console.log(city);
+        let city = $("#dep-to").val();
+        console.log(city);
         if (!city) {
           removeElementsDest();
           // console.log("string is empty");
@@ -167,10 +274,200 @@
       }
 
       function setup() {
-        $("#origin").on("input", getOrigin);
-        $("#destination").on("input", getDest);
+        $("#dep-from").on("input", getOrigin);
+        $("#dep-to").on("input", getDest);
       }
       $("document").ready(setup);
+
+      let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+      let dateObj = new Date();
+      let month = dateObj.getMonth();
+      let currMonth = dateObj.getMonth();
+      let year = dateObj.getFullYear();
+      let currYear = dateObj.getFullYear();
+      let tDate = dateObj;
+      let stayOpen = false;
+      let pickedDate = '';
+      let table = _('cal');
+      let cal = _('calender');
+      let xhr = new XMLHttpRequest();
+      let fromTo = 'from';
+
+      _('month').innerHTML = months[month];
+      _('year').innerHTML = year;
+      _('prev').addEventListener('click', () => trackMonth('prev'));
+      _('next').addEventListener('click', () => trackMonth('next'));
+      // _('dep-from').addEventListener('keyup', searchCities);
+      // _('dep-to').addEventListener('keyup', searchCities);
+      _('dep-from').addEventListener('focus', () => whichCityBox('from'));
+      _('dep-to').addEventListener('focus', () => whichCityBox('to'));
+      _('one-way').addEventListener('click', () => toggleReturnBox('one-way'));
+      _('return').addEventListener('click', () => toggleReturnBox('return'));
+      // _('flight-form').addEventListener('submit', onSubmit);
+
+      _('leave-date').addEventListener('focus', showCalender);
+      _('leave-date').addEventListener('blur', hideCalender);
+      _('return-date').addEventListener('focus', showCalender);
+      _('return-date').addEventListener('blur', hideCalender);
+
+      function _(id) {
+        return document.getElementById(id);
+      }
+
+      function addZero(d) {
+        if (d < 10) return '0' + d;
+        return d;
+      }
+
+      function convertDate(d) {
+        var ts = new Date(d).toString();
+        ts = ts.substr(0, 15);
+        console.log(ts);
+        return ts;
+      }
+
+      function toggleReturnBox(btn) {
+        let box1 = _('return-box');
+        console.log(this.checked);
+        if (btn == 'return') {
+          box1.style.opacity = 1;
+        }
+        if (btn == 'one-way') {
+          box1.style.opacity = 0;
+        }
+      }
+
+      function whichCityBox(ft) {
+        fromTo = ft;
+      }
+
+      function positionCalender(box) {
+  let boxPos = _('search-form').getBoundingClientRect(),
+    leaveBoxPos = _('leave-date').getBoundingClientRect(),
+    returnBoxPos = _('return-date').getBoundingClientRect(),
+    leaveTopPos = leaveBoxPos.top - boxPos.top,
+    leaveLeftPos = leaveBoxPos.left - boxPos.left,
+    returnTopPos = returnBoxPos.top - boxPos.top,
+    returnLeftPos = returnBoxPos.left - boxPos.left;
+
+  if (box === 'leave-date') {
+    cal.style.top = (leaveTopPos + 32) + 'px';
+    cal.style.left = (leaveLeftPos) + 'px';
+  }
+  if (box === 'return-date') {
+    cal.style.top = (returnTopPos + 32) + 'px';
+    cal.style.left = (returnLeftPos) + 'px';
+  }
+}
+
+function showCalender() {
+  cal.style.opacity = 1;
+  cal.style.pointerEvents = 'auto';
+  stayOpen = true;
+  pickedDate = this.id;
+  positionCalender(pickedDate);
+}
+
+function hideCalender() {
+  if (!stayOpen) {
+    cal.style.opacity = 0;
+    cal.style.pointerEvents = 'none';
+  }
+}
+
+function getCellDate() {
+  var tds = document.querySelectorAll('tbody td'),
+    i;
+  for (i = 0; i < tds.length; i++) {
+    let btn = tds[i];
+    btn.addEventListener('click', fetchDate);
+  }
+}
+
+function fetchDate() {
+  let td = this.getAttribute('data-date');
+  if (pickedDate == 'leave-date') {
+    _('leave-date').setAttribute('value', td);
+  }
+  if (pickedDate == 'return-date') {
+    _('return-date').value = td;
+  }
+  stayOpen = false;
+  hideCalender();
+}
+
+function trackMonth(dir) {
+  if (dir == 'prev') month -= 1;
+  if (dir == 'next') month += 1;
+  if (month > 11) {
+    month = 0;
+    year += 1;
+  }
+  if (month < 0) {
+    month = 11;
+    year -= 1;
+  }
+  _('month').innerHTML = months[month];
+  _('year').innerHTML = year;
+  calender(month, year);
+}
+
+function calender(month, year) {
+
+  let today = dateObj.getDate();
+  let firstDay = new Date(year, month, 1);
+  let startDay = firstDay.getDay();
+  let weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var monthLength = new Date(year, month + 1, 0).getDate();
+  let html = '';
+  let dd;
+
+  // DAYS OF WEEK HEADER
+  html += '<tr>';
+  for (let i = 0; i < weekDays.length; i++) {
+    html += '<td>' + weekDays[i] + '</td>';
+  }
+  html += '</tr>';
+
+  // CALENDAR PART
+  var count = 0; // count of table's <td> cells
+  if (startDay !== 0) { // Leave these cells blank
+    html += "<tr><td colspan='" + startDay + "'></td>";
+    count = startDay;
+  }
+  for (var day = 1; day <= monthLength; day++) {
+
+    if (count % 7 === 0) { // new table row
+      html += "<tr>";
+    }
+
+    dd = addZero(year) + '-' + addZero(month + 1) + '-' + day;
+
+    if (count < today && month == currMonth || year < currYear) {
+      html += "<td class='closed' data-date=" + dd + ">" + day + "</td>";
+    } else {
+      html += "<td class='normal' data-date=" + dd + ">" + day + "</td>";
+    }
+
+    count++;
+    if (count % 7 === 0) {
+      html += "</tr>";
+    }
+  }
+  var blankCells = 7 - count % 7;
+  if (blankCells < 7) {
+    html += "<td colspan='" + blankCells + "'></td></tr>";
+  }
+
+  table.innerHTML = html;
+
+  getCellDate();
+}
+
+calender(month, year);
+positionCalender('leave-date');
+
     </script>
   </body>
 </html>
@@ -189,12 +486,9 @@
   .list-items:hover {
     background-color: #dddddd;
   }
-  form {
+  /* form {
     width: 75vmin;
     position: absolute;
-    /* transform: translate(-50%, -50%); */
-    /* top: 50%; */
-    /* left: 50%; */
     padding: 40px 0;
   }
   input[type="text"] {
@@ -206,5 +500,5 @@
     border-radius: 5px 5px 0 0;
     background-color: #ffffff;
     font-size: 16px;
-  }
+  } */
 </style>

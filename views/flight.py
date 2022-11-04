@@ -5,7 +5,7 @@ Available values : ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST
 from amadeus import Client, Location, ResponseError
 from flask import Blueprint, make_response, redirect, render_template, request
 from helper.helper_api import *
-from helper.helper_flight import convert_flight_info
+from helper.helper_flight import convert_flight_info, parse_class
 
 flight_blueprint = Blueprint(
     "flight", __name__, static_folder="static", template_folder="templates"
@@ -58,12 +58,15 @@ def search_offers():
             if request.args.get("returnDate", ""):
                 kwargs.update({'returnDate' :request.args.get("returnDate", "")})
             if request.args.get("children", ""):
-                kwargs.update({"chilren": int(request.args.get("children", 0))})
+                kwargs.update({"children": int(request.args.get("children", 0))})
             if request.args.get("infants", ""):
                 kwargs.update({"infants": int(request.args.get("infants", 0))})
             if request.args.get("travelClass", ""):
-                kwargs.update({'travelClass':request.args.get("travelClass", "")})
+                travel_class = parse_class(request.args.get("travelClass", ""))
+                kwargs.update({'travelClass': travel_class})
+            # print("kwargs = ", kwargs)
             flights, _ = get_ticket_info(kwargs)
+            # print(flights)
             flight_offers = convert_flight_info(flights.get("data", []))
             return render_template("flight_display.html", flight_offers=flight_offers, oneway = request.args.get("returnDate", "") == "")
         except ResponseError as error:
