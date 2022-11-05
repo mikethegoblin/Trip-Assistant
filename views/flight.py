@@ -3,7 +3,8 @@ Handle the view for the ticket search
 Available values : ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST
 """
 from amadeus import Client, Location, ResponseError
-from flask import Blueprint, make_response, redirect, render_template, request
+from flask import (Blueprint, make_response, redirect, render_template,
+                   request, session)
 from helper.helper_api import *
 from helper.helper_flight import convert_flight_info, parse_class
 
