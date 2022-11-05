@@ -32,4 +32,5 @@ class City(db.Model):
     admin_name = db.Column(db.String(255))
     capital = db.Column(db.String(255))
     population = db.Column(db.Integer)
+    image = db.Column(db.String(255))
 
