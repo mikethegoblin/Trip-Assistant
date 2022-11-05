@@ -3,15 +3,18 @@
   }
   body {
     font-family: sans-serif;
-    display: flex;
+    /* display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;;
+    justify-content: flex-start;
+    align-items: ; */
   }
   
   #search-form {
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
     border: 1px solid red;
-    width: 700px;
+    width: 50%;
     position: relative;
   }
   
@@ -184,4 +187,24 @@
   }
   #confirm strong {
     font-weight: 600;
+  }
+
+  hr {
+    border: 0;
+    clear:both;
+    display:block;
+    width: 96%;               
+    background-color: #4c4e52;
+    height: 1px;
+  }
+
+  .recommendation_box {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+
+  .cities_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
   }

@@ -12,6 +12,7 @@ class User(db.Model):
     password = db.Column(db.Text, nullable=False)
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
+    last_browsed_country = db.Column(db.String(255), nullable=True)
     # phone_number = Column(String(10))
     def __repr__(self):
         return f"User {self.username}"
@@ -31,4 +32,5 @@ class City(db.Model):
     admin_name = db.Column(db.String(255))
     capital = db.Column(db.String(255))
     population = db.Column(db.Integer)
+    image = db.Column(db.String(255))
 
