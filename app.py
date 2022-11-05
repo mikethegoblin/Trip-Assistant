@@ -11,8 +11,10 @@ from helper.helper_limiter import limiter
 API_KEY_FILE = "keys.json"
 KEYS = helper_general.get_keys(API_KEY_FILE)
 from models import *
+import os
 
 migrate = Migrate()
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 def create_app() -> Flask:
     """
@@ -21,7 +23,6 @@ def create_app() -> Flask:
         An instance of the web application with the blueprints configured.
     """
     app = Flask(__name__)
-    limiter.init_app(app)
     app.register_blueprint(register.register_blueprint, url_prefix="")
     app.register_blueprint(login.login_blueprint, url_prefix="")
     app.register_blueprint(flight.flight_blueprint, url_prefix="")
@@ -40,4 +41,5 @@ def create_app() -> Flask:
 
 if __name__ == "__main__":
     app = create_app()
+    # app.run()
     app.run(host = "0.0.0.0", port = 5111, debug=True)

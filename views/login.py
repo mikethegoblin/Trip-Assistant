@@ -1,13 +1,64 @@
 """
 Handles the view for the user login system and related functionality.
 """
+import os
+import pathlib
+import google.auth.transport.requests
 import helper.helper_login as helper_login
-from flask import Blueprint, redirect, render_template, request, session
+import requests
 from database import db
+from flask import Blueprint, abort, redirect, render_template, request, session
+from google.oauth2 import id_token
+from google_auth_oauthlib.flow import Flow
+from pip._vendor import cachecontrol
+
+client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json") 
+print(client_secrets_file)
+
+flow = Flow.from_client_secrets_file(  #Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
+    client_secrets_file=client_secrets_file,
+    scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],  #here we are specifing what do we get after the authorization
+    redirect_uri="http://127.0.0.1:5111/callback"  #and the redirect URI is the point where the user will end up after the authorization
+)
 
 login_blueprint = Blueprint(
     "login", __name__, static_folder="static", template_folder="templates"
 )
+
+def login_is_required(function):  #a function to check if the user is authorized or not
+    def wrapper(*args, **kwargs):
+        if "google_id" not in session:  #authorization required
+            return abort(401)
+        else:
+            return function()
+
+    return wrapper
+
+@login_blueprint.route("/callback")  #this is the page that will handle the callback process meaning process after the authorization
+def callback():
+    flow.fetch_token(authorization_response=request.url)
+    print(request.url)
+    print(session["state"] == request.args["state"])
+    print(session["state"], "hi I am session state")
+    print(request.args['state'], "hi i am requets")
+    if not session["state"] == request.args["state"]:
+        abort(500)  #state does not match!
+
+    credentials = flow.credentials
+    request_session = requests.session()
+    cached_session = cachecontrol.CacheControl(request_session)
+    token_request = google.auth.transport.requests.Request(session=cached_session)
+
+    id_info = id_token.verify_oauth2_token(
+        id_token=credentials._id_token,
+        request=token_request,
+        audience=GOOGLE_CLIENT_ID
+    )
+
+    session["google_id"] = id_info.get("sub")  #defing the results to show on the page
+    session["name"] = id_info.get("name")
+    return redirect("/flight") 
+
 @login_blueprint.route("/", methods=["GET"])
 def display_login_page() -> object:
     """
@@ -25,6 +76,16 @@ def display_login_page() -> object:
         # Clear error session variables.
         session.pop("error", None)
         return render_template("login.html", errors=errors)
+
+@login_blueprint.route("/login")
+def google_login():
+    """
+    google login
+    """
+    authorization_url, state = flow.authorization_url()  #asking the flow class for the authorization (login) url
+    session["state"] = state
+    return redirect(authorization_url)
+
 
 @login_blueprint.route("/", methods=["POST"])
 def login() -> object:
@@ -67,5 +128,6 @@ def logout() -> object:
     """
     if "username" in session:
         session.pop("username", None)
+    session.clear()
 
     return redirect("/")
