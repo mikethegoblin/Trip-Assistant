@@ -2,11 +2,15 @@
 Handle the view for the ticket search
 Available values : ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST
 """
+import math
+from datetime import datetime
+
 from amadeus import Client, Location, ResponseError
 from flask import (Blueprint, make_response, redirect, render_template,
                    request, session)
 from helper.helper_api import *
 from helper.helper_flight import convert_flight_info, parse_class
+from models import Flight, Place, Week
 
 flight_blueprint = Blueprint(
     "flight", __name__, static_folder="static", template_folder="templates"
@@ -30,19 +34,23 @@ def select_destination(param):
     retrieve airports or cities from the Amadeus Airport & City Search API, 
     allowing a user to choose their origin and destination
     """
-    if request.method == "GET":
-        try:
-            response, _ =get_airport_info({"keyword": param, "subType": "AIRPORT"})
-            # display at most five list
-            address_information = response.get("data", [])[:5]
-            locations = []
-            for location_info in address_information:
-                locations.append([location_info.get("iataCode", ""), location_info["address"]["cityName"], location_info["address"]["countryName"]])
-            return make_response({"data":locations})
-        except ResponseError as error:
-            print(error)
-    else:
-        return {"error": "Invalid request method"}
+    try:
+        places = Place.query.all()
+        filters = []
+        q = param.lower()
+        for place in places:
+            if (q in place.city.lower()) or (q in place.airport.lower()) or (q in place.code.lower()) or (q in place.country.lower()):
+                filters.append([place.code, place.city, place.country])
+        # response, _ = get_airport_info({"keyword": param, "subType": "AIRPORT"})
+        # display at most five list
+        # address_information = response.get("data", [])[:5]
+        # locations = []
+        # for location_info in address_information:
+        #     locations.append([location_info.get("iataCode", ""), location_info["address"]["cityName"], location_info["address"]["countryName"]])
+        return make_response({"data":filters})
+    except ResponseError as error:
+        print(error)
+    return {"error": "Invalid request method"}
 
 @flight_blueprint.route("/flight/search_offers", methods=["GET"])
 def search_offers():
@@ -106,3 +114,108 @@ def predict_trip():
         print(error)
         return render_template(request, 'home.html', {})
     return render_template(request, 'home.html', {'res': purpose})
+
+
+@flight_blueprint.route("/flight/search", methods=["GET"])
+def search_flight():
+    o_place = request.args.get("Origin")
+    d_place = request.args.get("Destination")
+    trip_type = request.args.get("TripType")
+    departdate = request.args.get("DepartDate")
+    depart_date = datetime.strptime(departdate, "%Y-%m-%d")
+    return_date = None
+
+    if trip_type == '2':
+        returndate = request.args.get("ReturnDate")
+        return_date = datetime.strptime(returndate, "%Y-%m-%d")
+        flightday2 = Week.query.filter_by(number=return_date.weekday()).first()
+        origin2 = Place.query.filter_by(code=d_place.upper()).first()
+        destination2 = Place.query.filter_by(code=o_place.upper()).first()
+    
+    seat = request.args.get('SeatClass')
+    flightday = Week.query.filter_by(number=depart_date.weekday()).first()
+    destination = Place.query.filter_by(code=d_place.upper()).first()
+    origin = Place.query.filter_by(code=o_place.upper()).first()
+    if seat == 'economy':
+        flights = Flight.query.filter_by(depart_day=flightday,origin=origin,destination=destination).filter(Flight.economy_fare != 0).order_by(Flight.economy_fare)
+        try:
+            max_price = flights.last().economy_fare
+            min_price = flights.first().economy_fare
+        except:
+            max_price = 0
+            min_price = 0
+    
+        if trip_type == '2':
+            flights2 = Flight.query.filter_by(depart_day=flightday2,origin=origin2,destination=destination2).filter(Flight.economy_fare != 0).order_by(Flight.economy_fare)
+            try:
+                max_price2 = flights2.last().economy_fare
+                min_price2 = flights2.first().economy_fare
+            except:
+                max_price2 = 0
+                min_price2 = 0
+    elif seat == 'business':
+        flights = Flight.query.filter_by(depart_day=flightday,origin=origin,destination=destination).filter(Flight.business_fare != 0).order_by(Flight.business_fare)
+        try:
+            max_price = flights.last().business_fare
+            min_price = flights.first().business_fare
+        except:
+            max_price = 0
+            min_price = 0
+    
+        if trip_type == '2':
+            flights2 = Flight.query.filter_by(depart_day=flightday2,origin=origin2,destination=destination2).filter(Flight.business_fare != 0).order_by(Flight.business_fare)
+            try:
+                max_price2 = flights2.last().business_fare
+                min_price2 = flights2.first().business_fare
+            except:
+                max_price2 = 0
+                min_price2 = 0
+    elif seat == "first":
+        flights = Flight.query.filter_by(depart_day=flightday,origin=origin,destination=destination).filter(Flight.first_fare != 0).order_by(Flight.first_fare)
+        try:
+            max_price = flights.last().first_fare
+            min_price = flights.first().first_fare
+        except:
+            max_price = 0
+            min_price = 0
+    
+        if trip_type == '2':
+            flights2 = Flight.query.filter_by(depart_day=flightday2,origin=origin2,destination=destination2).filter(Flight.first_fare != 0).order_by(Flight.first_fare)
+            try:
+                max_price2 = flights2.last().first_fare
+                min_price2 = flights2.first().first_fare
+            except:
+                max_price2 = 0
+                min_price2 = 0
+    if trip_type == '2':
+        return render_template(
+            "search.html", 
+            flights=flights,
+            origin= origin,
+            destination= destination,
+            flights2= flights2,   ##
+            origin2= origin2,    ##
+            destination2= destination2,    ##
+            seat= seat.capitalize(),
+            trip_type= trip_type,
+            depart_date= depart_date,
+            return_date= return_date,
+            max_price= math.ceil(max_price/100)*100,
+            min_price= math.floor(min_price/100)*100,
+            max_price2= math.ceil(max_price2/100)*100,    ##
+            min_price2= math.floor(min_price2/100)*100    ##
+            
+        )
+    else:
+        return render_template(
+            "search.html", 
+            flights= flights,
+            origin= origin,
+            destination= destination,
+            seat= seat.capitalize(),
+            trip_type= trip_type,
+            depart_date= depart_date,
+            return_date= return_date,
+            max_price= math.ceil(max_price/100)*100,
+            min_price= math.floor(min_price/100)*100
+        )
