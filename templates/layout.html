@@ -1,5 +1,3 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -12,8 +10,8 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="https://use.typekit.net/cav5lva.css" />
-    <link rel="stylesheet" href="{% static 'css/layout_style.css' %}" />
-    <link rel="icon" type="image/ico" href="/static/img/favicon.ico" />
+    <link rel="stylesheet" href="../static/css/layout_style.css" />
+    <link rel="icon" type="image/ico" href="../static/img/favicon.ico" />
     <script
       src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
       integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
@@ -29,15 +27,15 @@
       integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
       crossorigin="anonymous"
     ></script>
-    <script type="text/javascript" src="{% static 'js/layout.js' %}"></script>
+    <script type="text/javascript" src="../static/js/layout.js"></script>
     {% block head %} {% endblock %}
   </head>
   <body>
     {% block parentBody %} {% endblock %}
     <div class="container-fluid">
       <nav class="navbar navbar-expand-lg navbar-light">
-        <a class="navbar-brand" href="{% url 'index' %}">
-          <img src="{% static 'img/icon_logo.png' %}" height="34" alt="" />
+        <a class="navbar-brand" href="/index">
+          <img src="../static/img/icon_logo.png" height="34" alt="" />
         </a>
         <button
           class="navbar-toggler"
@@ -54,14 +52,14 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item {% if not page %}active{% endif %}">
-              <a class="nav-link" href="{% url 'index' %}">Home</a>
+              <a class="nav-link" href="/index">Home</a>
             </li>
             <li class="nav-item {% if page == 'bookings' %}active{% endif %}">
-              <a class="nav-link" href="{% url 'bookings' %}">My Bookings</a>
+              <a class="nav-link" href="/bookings">My Bookings</a>
             </li>
           </ul>
           <ul class="navbar-nav">
-            {% if not user.is_authenticated %}
+            {% if not user%}
             <li class="nav-item">
               <button
                 class="btn btn-outline-danger"
@@ -132,7 +130,7 @@
                   </div>
                 </div>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="{% url 'logout' %}">
+                <a class="dropdown-item" href="/logout">
                   <svg
                     width="1.1em"
                     height="1.1em"
@@ -162,31 +160,25 @@
         <div class="container">
           <div>
             <div class="logo-container">
-              <img src="{% static 'img/icon_logo.png' %}" />
+              <img src="../static/img/icon_logo.png" />
             </div>
             <div class="footer-content">
               <div class="links-container">
                 <div>
                   <ul class="link-list">
                     <li class="list-item">
-                      <a class="footer-links" href="{% url 'contact' %}"
-                        >Contact Us</a
-                      >
+                      <a class="footer-links" href="/contact">Contact Us</a>
                     </li>
                     <li class="list-item">
-                      <a class="footer-links" href="{% url 'aboutus' %}"
-                        >About Us</a
-                      >
+                      <a class="footer-links" href="/aboutus">About Us</a>
                     </li>
                     <li class="list-item">
-                      <a class="footer-links" href="{% url 'privacypolicy' %}"
+                      <a class="footer-links" href="/privacypolicy"
                         >Privacy Policy</a
                       >
                     </li>
                     <li class="list-item">
-                      <a
-                        class="footer-links"
-                        href="{% url 'termsandconditions' %}"
+                      <a class="footer-links" href="/termsandconditions"
                         >Terms &amp; Conditions</a
                       >
                     </li>
