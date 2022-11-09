@@ -57,15 +57,16 @@ class Week(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     number = db.Column(db.Integer)
     name = db.Column(db.String(16))
+    flights_of_the_day = db.relationship("Flight", backref="depart_weekday")
 
     def __str__(self):
         return f"{self.name}, {self.number}"
 
-Flight_Day = db.Table(
-    "flight_day",
-    db.Column("flight_id", db.Integer, db.ForeignKey("flight.id")),
-    db.Column("weed_id", db.Integer, db.ForeignKey("week.id"))
-)
+# Flight_Day = db.Table(
+#     "flight_day",
+#     db.Column("flight_id", db.Integer, db.ForeignKey("flight.id")),
+#     db.Column("weed_id", db.Integer, db.ForeignKey("week.id"))
+# )
 
 
 class Flight(db.Model):
@@ -83,7 +84,8 @@ class Flight(db.Model):
     economy_fare = db.Column(db.Float, nullable=True)
     business_fare = db.Column(db.Float, nullable=True)
     first_fare = db.Column(db.Float, nullable=True)
-    depart_day = db.relationship("Week", secondary=Flight_Day, backref="flights_of_the_day")
+    # depart_day = db.relationship("Week", backref="flights_of_the_day", foreign_keys="Week.flight_id")
+    depart_day = db.Column(db.Integer, db.ForeignKey("week.id"))
     
     def __str__(self):
         f"{self.id}: {self.origin} to {self.destination}"
