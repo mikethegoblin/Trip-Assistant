@@ -137,6 +137,10 @@ def search_flight():
     destination = Place.query.filter_by(code=d_place.upper()).first()
     origin = Place.query.filter_by(code=o_place.upper()).first()
     if seat == 'economy':
+        print(origin.id, destination.id, flightday.id)
+        print("hihihhihiihihihih")
+        flights = Flight.query.filter_by(depart_day=flightday.id,origin_id=origin.id,destination_id=destination.id).first()
+        print(flights)
         flights = Flight.query.filter_by(depart_day=flightday,origin=origin,destination=destination).filter(Flight.economy_fare != 0).order_by(Flight.economy_fare)
         try:
             max_price = flights.last().economy_fare
