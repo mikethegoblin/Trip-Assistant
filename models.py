@@ -44,8 +44,8 @@ class Place(db.Model):
     airport = db.Column(db.String(64))
     code = db.Column(db.String(3))
     country = db.Column(db.String(64))
-    departures = db.relationship("Flight", backref="origin")
-    arrivals = db.relationship("Flight", backref="destination")
+    departures = db.relationship("Flight", backref="origin", foreign_keys="Flight.origin_id")
+    arrivals = db.relationship("Flight", backref="destination", foreign_keys="Flight.destination_id")
 
 
 
