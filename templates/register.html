@@ -44,11 +44,11 @@
           <input
             type="username"
             name="username"
+            id = "username"
             placeholder="Username"
             required
             autocomplete="username"
           />
-
           <div style="width: 100%">
             <i
               class="fa-solid fa-eye-slash input-icon"
@@ -71,7 +71,12 @@
           />
 
           <!-- !important Need to figure out how to centre these properly. Text should be centred, but the tickbox  icons shouldn't. -->
-          <ul id="password-check-icons">
+          <!-- <ul id="username-check-icons">
+            <li><i class="fa-solid fa-circle-check"></i> Username is valid
+            </li>
+          </ul> -->
+          <ul id="register-check-icons">
+            <li><i class="fa-solid fa-circle-check"></i> Username is valid
             <li>
               <i class="fa-solid fa-circle-check"></i> At least eight characters
             </li>
@@ -107,6 +112,8 @@
     </div>
   </body>
 
+
+  <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script>
     function get(id) {
       return document.getElementById(id);
@@ -118,25 +125,58 @@
     document
       .getElementById("password2")
       .addEventListener("input", validateInput);
+    $("#username").on("focusout", validateUsername);
+    // document
+    //   .getElementById("username")
+    //   .addEventListener("focusout", validateUsername);
+
+    function handleResponse(response){
+
+      var list = document.querySelectorAll("#register-check-icons li");
+      if(response == "True") {
+        list[0].classList.add("active");
+      }
+}
+
+    let request = null;
+
+    function validateUsername(evt){ 
+      var list = document.querySelectorAll("#register-check-icons li");
+      let username = $('#username').val();
+      let url = '/checkusername?username=' +username
+      list.forEach((item) => {
+        if(item == list[0])
+        item.classList.remove("active");
+      });
+      if (request != null)
+               request.abort();
+            request = $.ajax({
+               type: 'GET',
+               url: url,
+               success: handleResponse
+            });
+
+
+    }
 
     function validateInput(evt) {
-      var list = document.querySelectorAll("#password-check-icons li");
-
+      var list = document.querySelectorAll("#register-check-icons li");
       list.forEach((item) => {
+        if(item!=list[0])
         item.classList.remove("active");
       });
 
       if (this.value.length >= 8) {
-        list[0].classList.add("active");
+        list[1].classList.add("active");
       }
       if (this.value.match(/[0-9]/)) {
-        list[1].classList.add("active");
+        list[2].classList.add("active");
       }
       if (
         get("password1").value == get("password2").value &&
         get("password1").value.length > 0
       ) {
-        list[2].classList.add("active");
+        list[3].classList.add("active");
       }
     }
 
@@ -153,6 +193,7 @@
         get("password1").setAttribute("type", "password");
       }
     };
+    $('document').ready(validateUsername);
   </script>
 </html>
 

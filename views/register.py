@@ -8,6 +8,13 @@ register_blueprint = Blueprint(
     "register", __name__, static_folder="static", template_folder="templates"
 )
 
+@register_blueprint.route("/checkusername", methods=["GET"])
+def checkusername():
+    username = request.args.get("username")
+    if username == "":
+         return "False"
+    return helper_register.check_username(username)
+    
 @register_blueprint.route("/register", methods=["GET", "POST"])
 def register() -> object:
     """
@@ -26,7 +33,6 @@ def register() -> object:
                 errors = session["error"]
             session.pop("error", None)
             session["prev-page"] = request.url
-
             if "register_details" in session:
                 details = session["register_details"]
             else:
