@@ -81,7 +81,12 @@
             </div>
             <div class="info-box" id="arrive-box">
               <label for="">ARRIVING AT</label>
+<<<<<<< HEAD
+              <input type="text" id="dep-to" name="destinationLocationCode"/>
+              <input type="hidden" id="dest-city" name="destinationCity" value="" />
+=======
               <input type="text" id="dep-to" name="Destination"/>
+>>>>>>> main
               <div id="arrive-res">
                 <ul id="destination_list"></ul>
               </div>
@@ -136,34 +141,15 @@
 
   <hr>
   <div class="recommendation_box">
-    <h2>These Are Cities That You Might Like</h2>
-    <div class="cities_container">
-      <div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">city 1</h5>
-          <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
-          <p class="card-text">dexcription</p>
-          <!-- <a href="#" class="card-link">Card link</a> -->
-          <!-- <a href="#" class="card-link">Another link</a> -->
-        </div>
-      </div>
-      <div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">city 2</h5>
-          <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
-          <p class="card-text">description</p>
-          <!-- <a href="#" class="card-link">Card link</a> -->
-          <!-- <a href="#" class="card-link">Another link</a> -->
-        </div>
-      </div>
-      <div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">city 3</h5>
-          <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
-          <p class="card-text">description</p>
-          <!-- <a href="#" class="card-link">Card link</a> -->
-          <!-- <a href="#" class="card-link">Another link</a> -->
-        </div>
+    <h2>
+      Checkout Our Amazing Destination Recommender
+    </h2>
+    <div class="card w-50" >
+      <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
+      <div class="card-body">
+        <h5 class="card-title">Don't know where to go?</h5>
+        <p class="card-text">Take a short quiz, and we'll help you figure out your next ideal destination!</p>
+        <a href="recommend" class="btn btn-primary">Take a look</a>
       </div>
     </div>
   </div>
@@ -214,7 +200,7 @@
             curString = airportInfo.toString();
             listItem.setAttribute(
               "onclick",
-              "displayDest('" + airportInfo[0] + "')"
+              "displayDest('" + airportInfo[0] + "', '" + airportInfo[2] + "')"
             );
 
             listItem.innerHTML = curString;
@@ -229,8 +215,10 @@
         removeElementsOrigin();
       }
 
-      function displayDest(value) {
+      function displayDest(value, country) {
+        console.log(value);
         $('#dep-to').val(value);
+        $("#dest-country").val(country);
         removeElementsDest();
       }
 

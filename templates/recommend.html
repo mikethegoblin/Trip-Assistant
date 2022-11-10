@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>City Recommender</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../static/recommend.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  </head>
+
+  <body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <h1>
+      Know Your Next Destination In Just a Second!
+    </h1>
+    <div class="recommend-input-form">
+      <form action="recommend/result" method="GET">
+        <div>
+          <label for="location">Select Your Location of Residence</label>
+          <select id="location" class="custom-select" name="location-origin" style="width: 30%">
+            {% for loc in locations %} 
+              <option value="{{loc}}">{{loc}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <!-- <br> -->
+        <label for="feature-slider">Please Rate the following Features</label>
+        <br>
+        <div id="feature-slider">
+          <div class="form-group">
+            <label for="tourism">Tourism Score</label>
+            <input type="range" min="1" max="10" value="{{tourism_score or 1}}" step="1" class="slider" id="tourism" name="tourism-score" oninput="this.nextElementSibling.value = this.value">
+            <output>{{tourism_score or 1}}</output>
+          </div>
+          <!-- <br> -->
+          <div class="form-group">
+            <label for="food">Food Score</label>
+            <input type="range" min="1" max="10" value="{{food_score or 1}}" step="1" class="slider" id="food" name="food-score" oninput="this.nextElementSibling.value = this.value">
+            <output>{{food_score or 1}}</output>
+          </div>
+          <!-- <br> -->
+          <div class="form-group">
+            <label for="transport">Transport Score</label>
+            <input type="range" min="1" max="10" value="{{transport_score or 1}}" step="1" class="slider" id="transport" name="transport-score" oninput="this.nextElementSibling.value = this.value">
+            <output>{{transport_score or 1}}</output>
+          </div>
+          
+          <!-- <br> -->
+          <div class="form-group">
+            <label for="internet">Internet Score</label>
+            <input type="range" min="1" max="10" value="{{internet_score or 1}}" step="1" class="slider" id="internet" name="internet-score" oninput="this.nextElementSibling.value = this.value">
+            <output>{{internet_score or 1}}</output>
+          </div>
+          <!-- <br> -->
+          <div class="form-group">
+            <label for="nightlife">Nightlife Score</label>
+            <input type="range" min="1" max="10" value="{{nightlife_score or 1}}" step="1" class="slider" id="nightlife" name="nightlife-score" oninput="this.nextElementSibling.value = this.value">
+            <output>{{nightlife_score or 1}}</output>
+          </div>
+        </div>
+        <input type="submit" id="get-city" value="Recommend"/>
+      </form>
+    </div>
+
+    {% if result %}
+    <div class="recommend-result">
+      <h5>Recommendation</h5>
+      <p>
+        Based on your aggregate preferences and ratings, <b>{{final_city}}</b> is the top recommended city to move/travel to.
+      </p>
+      <h5>About {{final_city}}</h5>
+      <p>
+        {{final_city}} is a city in {{country}}. <br>
+        {{response}}
+      </p>
+      <div class="score-table">
+        {{dataframe|safe}}
+      </div>
+    </div>
+    {% endif %}
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>

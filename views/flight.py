@@ -26,6 +26,8 @@ amadeus = Client(
 
 @flight_blueprint.route("/flight", methods=["GET"])
 def flight():
+    # username = session["username"]
+    # recommended_cities = get_city_recommendations(username)
     return render_template('flight.html')
 
 @flight_blueprint.route("/flight/select_place/<param>", methods=["GET"])
