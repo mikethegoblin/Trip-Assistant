@@ -57,15 +57,15 @@
       <section>
         <div class="flight" id="flightbox">
           
-          <form id="flight-form" action="/flight/search_offers" method="GET">
+          <form id="flight-form" action="/flight/search" method="GET">
           <!-- TRIP TYPE -->
           <div id="flight-type">
             <div class="info-box">
-              <input type="radio" name="flight-type" value="Return" id="return" checked />
-              <label for="return">RETURN</label>
+              <input type="radio" name="TripType" value=2 id="return" checked />
+              <label for="return">ROUND TRIP</label>
             </div>
             <div class="info-box">
-              <input type="radio" name="flight-type" value="Single" id="one-way" />
+              <input type="radio" name="TripType" value=1 id="one-way" />
               <label for="one-way">ONE WAY</label>
             </div>
           </div>
@@ -74,14 +74,14 @@
           <div id="flight-depart">
             <div class="info-box">
               <label for="">LEAVING FROM</label>
-              <input type="text" id="dep-from" name="originLocationCode"/>
+              <input type="text" id="dep-from" name="Origin"/>
               <div id="depart-res">
                 <ul id="origin_list"></ul>
               </div>
             </div>
             <div class="info-box" id="arrive-box">
               <label for="">ARRIVING AT</label>
-              <input type="text" id="dep-to" name="destinationLocationCode"/>
+              <input type="text" id="dep-to" name="Destination"/>
               <div id="arrive-res">
                 <ul id="destination_list"></ul>
               </div>
@@ -92,40 +92,20 @@
           <div id="flight-dates">
             <div class="info-box">
               <label for="">LEAVING ON</label>
-              <input type="text" id="leave-date" name="departureDate" readonly />
+              <input type="text" id="leave-date" name="DepartDate" readonly />
             </div>
             <div class="info-box" id="return-box">
               <label for="">RETURNING ON</label>
-              <input type="text" id="return-date" name="returnDate" readonly />
+              <input type="text" id="return-date" name="ReturnDate" readonly />
             </div>
           </div>
           
-          <!-- PASSENGER INFO -->
-          <div id="flight-info">
-            <div class="info-box">
-              <label for="adults">ADULTS</label>
-              <select name="adults" id="adults">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-              </select>
-            </div>
-            <div class="info-box">
-              <label for="children">CHILDREN</label>
-              <select name="children" id="children">
-                <option value="0">0</option>
-                <option value="1">1</option>
-                <option value="0">2</option>
-                <option value="3">3</option>
-              </select>
-            </div>
             <div class="info-box">
               <label for="class-type">CLASS</label>
-              <select name="travelClass" id="class-type">
-                <option value="Economy">ECONOMY</option>
-                <option value="Business">BUSINESS</option>
-                <option value="First">FIRST CLASS</option>
+              <select name="SeatClass" id="class-type">
+                <option value="economy">ECONOMY</option>
+                <option value="business">BUSINESS</option>
+                <option value="first">FIRST</option>
               </select>
             </div>
         </div>

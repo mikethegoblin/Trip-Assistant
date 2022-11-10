@@ -3,6 +3,7 @@ Handles the view for the user login system and related functionality.
 """
 import os
 import pathlib
+
 import google.auth.transport.requests
 import helper.helper_login as helper_login
 import requests
@@ -94,8 +95,8 @@ def login() -> object:
     Returns:
         Redirection to the main page if login was successful.
     """
-    username = request.form["username"].lower()
-    password = request.form["password"]
+    username = request.form.get("username", "").lower()
+    password = request.form.get("password", "")
 
     result = db.session.execute("SELECT password FROM user WHERE username=:usrname;", {"usrname": username}).first()
     # Gets the password if it exists, otherwise returns an error as the
