@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def move_place():
     with sqlite3.connect("../instance/test.db") as conn1:
         with sqlite3.connect("../instance/db.sqlite3") as conn2:
@@ -39,6 +40,15 @@ def move_flight():
                         " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             cursor1.executemany(insertion, result)
 
+def price():
+    with sqlite3.connect("../instance/test.db") as conn1:
+        cursor1 = conn1.cursor()
+        # query = "update flight set economy_fare = economy_fare + 100"
+        # cursor1.execute(query)
+        query = "update flight set business_fare = business_fare * 3"
+        cursor1.execute(query)
+        query = "update flight set first_fare = first_fare * 5"
+        cursor1.execute(query)
 
 if __name__ == "__main__":
-    move_flight()
+    price()

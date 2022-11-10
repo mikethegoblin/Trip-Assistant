@@ -116,20 +116,30 @@ def predict_trip():
     return render_template(request, 'home.html', {'res': purpose})
 
 
-@flight_blueprint.route("/flight/search", methods=["GET"])
+@flight_blueprint.route("/flight/search", methods=["GET", "POST"])
 def search_flight():
     username = session.get("username")
     user = None
     if username:
         user = User.query.filter_by(username=username).first()
         
-    print(session)
-    o_place = request.args.get("Origin")
-    d_place = request.args.get("Destination")
-    trip_type = request.args.get("TripType")
-    departdate = request.args.get("DepartDate")
-    depart_date = datetime.strptime(departdate, "%Y-%m-%d")
-    return_date = None
+    if request.method == "GET":
+        o_place = request.args.get("Origin")
+        d_place = request.args.get("Destination")
+        trip_type = request.args.get("TripType")
+        departdate = request.args.get("DepartDate")
+        depart_date = datetime.strptime(departdate, "%Y-%m-%d")
+        return_date = None
+        seat = request.args.get('SeatClass')
+    if request.method == "POST":
+        o_place = request.form.get("Origin")
+        d_place = request.form.get("Destination")
+        trip_type = request.form.get("TripType")
+        departdate = request.form.get("DepartDate")
+        depart_date = datetime.strptime(departdate, "%Y-%m-%d")
+        return_date = None
+        seat = request.form.get("SeatClass")
+
 
     if trip_type == '2':
         returndate = request.args.get("ReturnDate")
@@ -138,15 +148,14 @@ def search_flight():
         origin2 = Place.query.filter_by(code=d_place.upper()).first()
         destination2 = Place.query.filter_by(code=o_place.upper()).first()
     
-    seat = request.args.get('SeatClass')
     flightday = Week.query.filter_by(number=depart_date.weekday()).first()
     destination = Place.query.filter_by(code=d_place.upper()).first()
     origin = Place.query.filter_by(code=o_place.upper()).first()
     if seat == 'economy':
-        flights = Flight.query.filter_by(depart_day=flightday.id,origin_id=origin.id,destination_id=destination.id).filter(Flight.economy_fare != 0).order_by(Flight.economy_fare).all()
+        flights = Flight.query.filter_by(depart_day=flightday.id,origin_id=origin.id,destination_id=destination.id).filter(Flight.economy_fare!=0).order_by(Flight.economy_fare).all()
         try:
-            max_price = flights.last().economy_fare
-            min_price = flights.first().economy_fare
+            max_price = flights[-1].economy_fare
+            min_price = flights[0].economy_fare
         except:
             max_price = 0
             min_price = 0
@@ -154,16 +163,16 @@ def search_flight():
         if trip_type == '2':
             flights2 = Flight.query.filter_by(depart_day=flightday2.id,origin_id=origin2.id,destination_id=destination2.id).filter(Flight.economy_fare != 0).order_by(Flight.economy_fare).all()
             try:
-                max_price2 = flights2.last().economy_fare
-                min_price2 = flights2.first().economy_fare
+                max_price2 = flights2[-1].economy_fare
+                min_price2 = flights2[0].economy_fare
             except:
                 max_price2 = 0
                 min_price2 = 0
     elif seat == 'business':
         flights = Flight.query.filter_by(depart_day=flightday.id,origin_id=origin.id,destination_id=destination.id).filter(Flight.business_fare != 0).order_by(Flight.business_fare).all()
         try:
-            max_price = flights.last().business_fare
-            min_price = flights.first().business_fare
+            max_price = flights[-1].business_fare
+            min_price = flights[0].business_fare
         except:
             max_price = 0
             min_price = 0
@@ -171,16 +180,16 @@ def search_flight():
         if trip_type == '2':
             flights2 = Flight.query.filter_by(depart_day=flightday2.id,origin_id=origin2.id,destination_id=destination2.id).filter(Flight.business_fare != 0).order_by(Flight.business_fare).all()
             try:
-                max_price2 = flights2.last().business_fare
-                min_price2 = flights2.first().business_fare
+                max_price2 = flights2[-1].business_fare
+                min_price2 = flights2[0].business_fare
             except:
                 max_price2 = 0
                 min_price2 = 0
     elif seat == "first":
         flights = Flight.query.filter_by(depart_day=flightday.id,origin_id=origin.id,destination_id=destination.id).filter(Flight.first_fare != 0).order_by(Flight.first_fare).all()
         try:
-            max_price = flights.last().first_fare
-            min_price = flights.first().first_fare
+            max_price = flights[-1].first_fare
+            min_price = flights[0].first_fare
         except:
             max_price = 0
             min_price = 0
@@ -188,8 +197,8 @@ def search_flight():
         if trip_type == '2':
             flights2 = Flight.query.filter_by(depart_day=flightday2.id,origin_id=origin2.id,destination_id=destination2.id).filter(Flight.first_fare != 0).order_by(Flight.first_fare).all()
             try:
-                max_price2 = flights2.last().first_fare
-                min_price2 = flights2.first().first_fare
+                max_price2 = flights2[-1].first_fare
+                min_price2 = flights2[0].first_fare
             except:
                 max_price2 = 0
                 min_price2 = 0
