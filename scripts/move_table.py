@@ -1,5 +1,30 @@
 import sqlite3
+import random
 
+
+US_CITIES = {
+    1: "Atlanta",
+    4: "Los Angeles",
+    5: "Chicago",
+    22: "New York",
+    24: "San Francisco",
+    27: "Las Vegas",
+    39: "Orlando",
+    40: "Miami",
+    43: "Newark",
+    48: "Houston",
+    53: "Minneapolis",
+    55: "Boston",
+    59: "Detroit",
+    63: "Orlando",
+    68: "New York",
+    69: "Philadelphia",
+    79: "Baltimore",
+    91: "Salt Lake City",
+    93: "Washington",
+}
+
+US_AIRLINES = {"Delta Airlines": "DL", "American Airlines": "AA", "United Airlines": "UA", "Jet Blue": "B6"}
 
 def move_place():
     with sqlite3.connect("../instance/test.db") as conn1:
@@ -43,12 +68,31 @@ def move_flight():
 def price():
     with sqlite3.connect("../instance/test.db") as conn1:
         cursor1 = conn1.cursor()
-        # query = "update flight set economy_fare = economy_fare + 100"
-        # cursor1.execute(query)
-        query = "update flight set business_fare = business_fare * 3"
+        query = "update flight set economy_fare = ROUND(economy_fare, 2)"
         cursor1.execute(query)
-        query = "update flight set first_fare = first_fare * 5"
+        query = "update flight set business_fare = ROUND(business_fare, 2)"
         cursor1.execute(query)
+        query = "update flight set first_fare = ROUND(first_fare, 2)"
+        cursor1.execute(query)
+
+def insert_domestic_flights():
+    with sqlite3.connect("../instance/test.db") as conn:
+        cursor = conn.cursor()
+        statement = "UPDATE flight SET origin_id=?, destination_id=?, plane=?, airline=? WHERE id=?"
+        place_ids = list(US_CITIES.keys())
+        airlines = list(US_AIRLINES.keys())
+        for i in range(1, 101):
+            origin_id = random.choice(place_ids)
+            destination_id = choose_random_place(origin_id, place_ids)
+            airline = random.choice(airlines)
+            plane = US_AIRLINES[airline] + str(random.randint(100, 2000))
+            cursor.execute(statement, (origin_id, destination_id, plane, airline, i))
+
+def choose_random_place(id, ids):
+    result = random.choice(ids)
+    while result == id:
+        result = random.choice(ids)
+    return result
 
 if __name__ == "__main__":
     price()
