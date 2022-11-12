@@ -13,6 +13,7 @@ from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 
+GOOGLE_CLIENT_ID = "223412764881-smapie5fi1imh0q1vr9rkldu7nfjrc3u.apps.googleusercontent.com"
 client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json") 
 print(client_secrets_file)
 
