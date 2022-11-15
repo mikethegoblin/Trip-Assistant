@@ -47,7 +47,7 @@ def final_answer(df,word, data):
     ranking = list(zip(list(data.loc[word].index),data.loc[word]))
     breakdown = pd.DataFrame(ranking, columns = ['Category','Score'])
     breakdown['Score'] = breakdown['Score'].round(1)
-
+    breakdown = breakdown.iloc[[2,4,5,7,14],].reset_index().iloc[:,1:3]
     return country, response, breakdown
 
 def get_locations():
