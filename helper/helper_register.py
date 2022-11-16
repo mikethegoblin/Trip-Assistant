@@ -1,6 +1,6 @@
 from curses.ascii import isalnum
 from typing import List, Tuple
-from helper.helper_database import create_user
+from helper.helper_database import create_user, get_userId_by_username
 from database import db
 
 import bcrypt
@@ -72,7 +72,11 @@ def validate_registration(
     if pwd != pwd_confirm:
         message.append("Passwords do not match!")
         valid = False
-
+    
+    # Check username is unique.
+    if check_username(user_name) != "True":
+        message.append("This username has already been taken!")
+        valid = False
     return valid, message
 
 def hash_pwd(password: str) -> str:
@@ -105,5 +109,8 @@ def register_user(
     db.session.add(user)
     db.session.commit()
 
-
+def check_username(username):
+    if get_userId_by_username(username)== None:
+        return "True"
+    return "False"
     

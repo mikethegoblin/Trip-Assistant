@@ -5,6 +5,7 @@ import helper.helper_general as helper_general
 import views.flight as flight
 import views.login as login
 import views.register as register
+import views.recommend as recommend
 from database import db
 from helper.helper_limiter import limiter
 
@@ -26,6 +27,7 @@ def create_app() -> Flask:
     app.register_blueprint(register.register_blueprint, url_prefix="")
     app.register_blueprint(login.login_blueprint, url_prefix="")
     app.register_blueprint(flight.flight_blueprint, url_prefix="")
+    app.register_blueprint(recommend.recommend_blueprint, url_prefix="")
 
     app.url_map.strict_slashes = False
     app.secret_key = KEYS["app_secret_key"]

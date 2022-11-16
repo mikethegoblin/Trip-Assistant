@@ -28,6 +28,8 @@ amadeus = Client(
 
 @flight_blueprint.route("/flight", methods=["GET"])
 def flight():
+    # username = session["username"]
+    # recommended_cities = get_city_recommendations(username)
     return render_template('flight.html')
 
 @flight_blueprint.route("/flight/select_place/<param>", methods=["GET"])
@@ -53,38 +55,6 @@ def select_destination(param):
     except ResponseError as error:
         print(error)
     return {"error": "Invalid request method"}
-
-@flight_blueprint.route("/flight/search_offers", methods=["GET"])
-def search_offers():
-    """
-    allow them to search for flights between those locations on the dates they want to travel.
-    """
-    if request.method == "GET":
-        try:
-            kwargs = {'originLocationCode' : request.args.get("originLocationCode"),
-            'destinationLocationCode' : request.args.get("destinationLocationCode"),
-            'departureDate' : request.args.get("departureDate"),
-            'adults':int(request.args.get("adults", 1)),
-            "max": 10}
-            if request.args.get("returnDate", ""):
-                kwargs.update({'returnDate' :request.args.get("returnDate", "")})
-            if request.args.get("children", ""):
-                kwargs.update({"children": int(request.args.get("children", 0))})
-            if request.args.get("infants", ""):
-                kwargs.update({"infants": int(request.args.get("infants", 0))})
-            if request.args.get("travelClass", ""):
-                travel_class = parse_class(request.args.get("travelClass", ""))
-                kwargs.update({'travelClass': travel_class})
-            # print("kwargs = ", kwargs)
-            flights, _ = get_ticket_info(kwargs)
-            # print(flights)
-            flight_offers = convert_flight_info(flights.get("data", []))
-            return render_template("flight_display.html", flight_offers=flight_offers, oneway = request.args.get("returnDate", "") == "")
-        except ResponseError as error:
-            print(error)
-    else:
-        print(error)
-        return {"error": "Invalid request method"}
 
 @flight_blueprint.route("/price_offers")
 def price_offer():
