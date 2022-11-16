@@ -486,9 +486,7 @@ def ticket_data(ref):
 
 @flight_blueprint.route("/bookings")
 def list_bookings():
-    for i in range(1, 18):
-        TicketPassenger.query.filter_by(id=i).delete()
-        db.session.commit()
+ 
     if session.get("username"):
         user = User.query.filter_by(username=session.get("username")).first()
         tickets = Ticket.query.filter_by(user_id=user.id).order_by('booking_date').all()

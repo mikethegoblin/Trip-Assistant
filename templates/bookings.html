@@ -11,7 +11,7 @@
         <div style="display: flex; color: #666666; margin-top: auto">
           <div>
             <span style="font-size: 2.1em"
-              >{{ticket.flight_ddate.strfttime('%d')}}</span
+              >{{ticket.flight_ddate.strftime('%d')}}</span
             >
           </div>
           <div
@@ -28,7 +28,7 @@
                 {{ticket.flight_ddate.strftime('%a')}}
               </div>
               <div style="margin-top: 1px">
-                {{ticket.flight_ddate.strftime('%m,%Y')}}
+                {{ticket.flight_ddate.strftime('%b,%Y')}}
               </div>
             </div>
           </div>
@@ -44,7 +44,7 @@
           <div class="row places-div" style="font-size: 0.8em; color: #999999">
             <div style="max-width: 100%">
               {{ticket.flight.airline}} &middot; {{ticket.flight.plane}}
-              &middot; {{ticket.passengers.count}} Passengers
+              &middot; {{ticket.passengers|length}} Passengers
             </div>
           </div>
         </div>
