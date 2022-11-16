@@ -14,6 +14,7 @@ class User(db.Model):
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
     last_browsed_country = db.Column(db.String(255), nullable=True)
+    tickets = db.relationship("Ticket", backref="user")
     # phone_number = Column(String(10))
     def __repr__(self):
         return f"User {self.username}"
@@ -87,7 +88,54 @@ class Flight(db.Model):
     first_fare = db.Column(db.Float, nullable=True)
     # depart_day = db.relationship("Week", backref="flights_of_the_day", foreign_keys="Week.flight_id")
     depart_day = db.Column(db.Integer, db.ForeignKey("week.id"))
+    tickets = db.relationship("Ticket", backref="flight")
     
     def __str__(self):
-        f"{self.id}: {self.origin} to {self.destination}"
+        return f"{self.id}: {self.origin} to {self.destination}"
+
+
+class Passenger(db.Model):
+    """ 
+    Scheme for passenger table
+    """
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    first_name = db.Column(db.String(64), nullable=False)
+    last_name = db.Column(db.String(64), nullable=False)
+    gender = db.Column(db.String(20), nullable=False)
+
+    def __str__(self):
+        return f"Passenger: {self.first_name} {self.last_name}, {self.gender}"
+
+TicketPassenger = db.Table(
+    "ticket_passenger",
+    db.Column("id", db.Integer, autoincrement=True, primary_key=True),
+    db.Column("ticket_id", db.Integer, db.ForeignKey('ticket.id')),
+    db.Column("passenger_id", db.Integer, db.ForeignKey('passenger.id'))
+)
+
+class Ticket(db.Model):
+    """
+    Schema for Ticket table
+    """
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    flight_id = db.Column(db.Integer, db.ForeignKey("flight.id"))
+    ref_no = db.Column(db.String(6), nullable=False)
+    passengers = db.relationship("Passenger", secondary=TicketPassenger, backref="tickets")
+    flight_ddate = db.Column(db.Time, nullable=True)
+    flight_adate = db.Column(db.Time, nullable=True)
+    flight_fare = db.Column(db.Float, nullable=True)
+    other_charges = db.Column(db.Float, nullable=True)
+    total_fare = db.Column(db.Float, nullable=True)
+    seat_class = db.Column(db.String(20), nullable=False)
+    booking_date = db.Column(db.Time, nullable=False)
+    mobile = db.Column(db.String(20), nullable=False)
+    email = db.Column(db.String(45), nullable=False)
+    status = db.Column(db.String(45), nullable=False)
+
+    def __str__(self):
+        return self.ref_no
+
+
+
 
