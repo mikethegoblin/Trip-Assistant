@@ -34,7 +34,7 @@ def create_app() -> Flask:
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
     db.init_app(app)
     # handles database migrations
-    migrate.init_app(app, db, render_as_batch=True)
+    migrate.init_app(app, db)
     with app.app_context():
         db.create_all()  # Create database tables for our data models
 
