@@ -16,6 +16,8 @@ flight_blueprint = Blueprint(
     "flight", __name__, static_folder="static", template_folder="templates"
 )
 
+FEE = 100.0
+
 API_KEY="RRU3luwDGuknU0Sy16iUXX52G7qCeDnU"
 API_SECRET="ASSQQlF8qWj5Vt3F"
 
@@ -234,3 +236,142 @@ def search_flight():
             max_price= math.ceil(max_price/100)*100,
             min_price= math.floor(min_price/100)*100
         )
+
+@flight_blueprint.route("/flight/review", methods=["GET"])
+def review():
+    flight_1 = request.args.get("flightId")
+    date1 = request.args.get("flight1Date")
+    seat = request.args.get("seatClass")
+    round_trip = False
+    if request.args.get("flight2Id"):
+        round_trip = True
+    
+    if round_trip:
+        flight_2 = request.args.get("flight2Id")
+        date2 = request.args.get("flight2Date")
+    
+    # if request.user.is_authenticated:
+    flight1 = Flight.query.filter_by(id=flight_1).first()
+    flight1ddate = datetime(int(date1.split('-')[2]),int(date1.split('-')[1]),int(date1.split('-')[0]),flight1.depart_time.hour,flight1.depart_time.minute)
+    flight1adate = (flight1ddate + flight1.duration)
+    flight2 = None
+    flight2ddate = None
+    flight2adate = None
+    if round_trip:
+        flight2 = Flight.query.filter_by(id=flight_2).first()
+        flight2ddate = datetime(int(date2.split('-')[2]),int(date2.split('-')[1]),int(date2.split('-')[0]),flight2.depart_time.hour,flight2.depart_time.minute)
+        flight2adate = (flight2ddate + flight2.duration)
+    if round_trip:
+        return render_template("book.html", 
+            flight1= flight1,
+            flight2= flight2,
+            flight1ddate= flight1ddate,
+            flight1adate= flight1adate,
+            flight2ddate= flight2ddate,
+            flight2adate= flight2adate,
+            seat= seat,
+            fee= FEE
+        )
+    return render_template("book.html", 
+        flight1=flight1,
+        flight1ddate=flight1ddate,
+        flight1adate=flight1adate,
+        seat=seat,
+        fee=FEE
+    )
+    # else:
+    #     return HttpResponseRedirect(reverse("login"))
+
+@flight_blueprint.route("/flight/payment", methods=["POST"])
+def payment():
+        #if request.user.is_authenticated:
+    ticket_id = request.form['ticket']
+    t2 = False
+    if request.form.get('ticket2'):
+        ticket2_id = request.form['ticket2']
+        t2 = True
+    fare = request.form.get('fare')
+    card_number = request.form['cardNumber']
+    card_holder_name = request.form['cardHolderName']
+    exp_month = request.form['expMonth']
+    exp_year = request.form['expYear']
+    cvv = request.form['cvv']
+
+    # try:
+    ticket = Ticket.query.filter_by(id=ticket_id)
+    ticket.status = 'CONFIRMED'
+    ticket.booking_date = datetime.now()
+    ticket.save()
+    if t2:
+        ticket2 = Ticket.query.filter_by(id=ticket2_id)
+        ticket2.status = 'CONFIRMED'
+        ticket2.save()
+        return render_template('payment_process.html', 
+            ticket1=ticket,
+            ticket2=ticket2
+        )
+    return render_template('payment_process.html', 
+        ticket1=ticket,
+        ticket2=""
+    )
+    #         except Exception as e:
+    #             return HttpResponse(e)
+    #     else:
+    #         return HttpResponse("Method must be post.")
+    # else:
+    #     return HttpResponseRedirect(reverse('login'))
+
+
+@flight_blueprint.route("flight/bookings")
+def bookings():
+#if request.user.is_authenticated:
+    tickets = Ticket.objects.filter(user=request.user).order_by('-booking_date')
+    return render_template(request, 'bookings.html', 
+        page=bookings,
+        tickets=tickets
+    )
+# else:
+#     return HttpResponseRedirect(reverse('login'))
+
+# @csrf_exempt
+# def cancel_ticket(request):
+#     if request.method == 'POST':
+#         if request.user.is_authenticated:
+#             ref = request.POST['ref']
+#             try:
+#                 ticket = Ticket.objects.get(ref_no=ref)
+#                 if ticket.user == request.user:
+#                     ticket.status = 'CANCELLED'
+#                     ticket.save()
+#                     return JsonResponse({'success': True})
+#                 else:
+#                     return JsonResponse({
+#                         'success': False,
+#                         'error': "User unauthorised"
+#                     })
+#             except Exception as e:
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': e
+#                 })
+#         else:
+#             return HttpResponse("User unauthorised")
+#     else:
+#         return HttpResponse("Method must be POST.")
+
+# def resume_booking(request):
+#     if request.method == 'POST':
+#         if request.user.is_authenticated:
+#             ref = request.POST['ref']
+#             ticket = Ticket.objects.get(ref_no=ref)
+#             if ticket.user == request.user:
+#                 return render(request, "flight/payment.html", {
+#                     'fare': ticket.total_fare,
+#                     'ticket': ticket.id
+#                 })
+#             else:
+#                 return HttpResponse("User unauthorised")
+#         else:
+#             return HttpResponseRedirect(reverse("login"))
+#     else:
+#         return HttpResponse("Method must be post.")
