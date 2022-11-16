@@ -3,14 +3,17 @@ Handle the view for the ticket search
 Available values : ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST
 """
 import math
+import secrets
 from datetime import datetime, timedelta
 
 from amadeus import Client, Location, ResponseError
+from database import db
 from flask import (Blueprint, make_response, redirect, render_template,
                    request, session)
 from helper.helper_api import *
 from helper.helper_flight import convert_flight_info, parse_class
-from models import Flight, Place, User, Week
+from models import (Flight, Passenger, Place, Ticket, TicketPassenger, User,
+                    Week)
 
 flight_blueprint = Blueprint(
     "flight", __name__, static_folder="static", template_folder="templates"
@@ -273,14 +276,14 @@ def payment():
     cvv = request.form['cvv']
 
     # try:
-    ticket = Ticket.query.filter_by(id=ticket_id)
+    ticket = Ticket.query.filter_by(id=ticket_id).first()
     ticket.status = 'CONFIRMED'
     ticket.booking_date = datetime.now()
-    ticket.save()
+    db.session.commit()
     if t2:
-        ticket2 = Ticket.query.filter_by(id=ticket2_id)
+        ticket2 = Ticket.query.filter_by(id=ticket2_id).first()
         ticket2.status = 'CONFIRMED'
-        ticket2.save()
+        db.session.commit()
         return render_template('payment_process.html', 
             ticket1=ticket,
             ticket2=ticket2
@@ -297,14 +300,14 @@ def payment():
     #     return HttpResponseRedirect(reverse('login'))
 
 
-@flight_blueprint.route("flight/bookings")
-def bookings():
-#if request.user.is_authenticated:
-    tickets = Ticket.objects.filter(user=request.user).order_by('-booking_date')
-    return render_template(request, 'bookings.html', 
-        page=bookings,
-        tickets=tickets
-    )
+# @flight_blueprint.route("flight/bookings")
+# def bookings():
+# #if request.user.is_authenticated:
+#     tickets = Ticket.objects.filter(user=request.user).order_by('-booking_date')
+#     return render_template(request, 'bookings.html', 
+#         page=bookings,
+#         tickets=tickets
+#     )
 # else:
 #     return HttpResponseRedirect(reverse('login'))
 
@@ -353,67 +356,145 @@ def bookings():
 
 @flight_blueprint.route("/flight/ticket/book", methods=["POST"])
 def book():
+    print(session)
     #if request.user.is_authenticated:
-    flight_1 = request.POST.get('flight1')
-    flight_1date = request.POST.get('flight1Date')
-    flight_1class = request.POST.get('flight1Class')
+    username = session["username"]
+    user = User.query.filter_by(username=username).first()
+    flight_1 = request.form.get('flight1')
+    flight_1date = request.form.get('flight1Date')
+    flight_1class = request.form.get('flight1Class')
     f2 = False
-    if request.POST.get('flight2'):
-        flight_2 = request.POST.get('flight2')
-        flight_2date = request.POST.get('flight2Date')
-        flight_2class = request.POST.get('flight2Class')
+    if request.form.get('flight2'):
+        flight_2 = request.form.get('flight2')
+        flight_2date = request.form.get('flight2Date')
+        flight_2class = request.form.get('flight2Class')
         f2 = True
-    countrycode = request.POST['countryCode']
-    mobile = request.POST['mobile']
-    email = request.POST['email']
-    flight1 = Flight.objects.get(id=flight_1)
+    countrycode = request.form['countryCode']
+    mobile = request.form['mobile']
+    email = request.form['email']
+    flight1 = Flight.query.filter_by(id=flight_1).first()
     if f2:
-        flight2 = Flight.objects.get(id=flight_2)
-    passengerscount = request.POST['passengersCount']
+        flight2 = Flight.query.filter_by(id=flight_2).first()
+    passengerscount = request.form['passengersCount']
     passengers=[]
     for i in range(1,int(passengerscount)+1):
-        fname = request.POST[f'passenger{i}FName']
-        lname = request.POST[f'passenger{i}LName']
-        gender = request.POST[f'passenger{i}Gender']
-        passengers.append(Passenger.objects.create(first_name=fname,last_name=lname,gender=gender.lower()))
-    coupon = request.POST.get('coupon')
+        fname = request.form[f'passenger{i}FName']
+        lname = request.form[f'passenger{i}LName']
+        gender = request.form[f'passenger{i}Gender']
+        psg = Passenger(first_name=fname,last_name=lname,gender=gender.lower())
+        passengers.append(psg)
+        # passengers.append(Passenger.query.filter_byate(first_name=fname,last_name=lname,gender=gender.lower()))
+    coupon = request.form.get('coupon')
     
-    try:
-        ticket1 = createticket(request.user,passengers,passengerscount,flight1,flight_1date,flight_1class,coupon,countrycode,email,mobile)
+    ticket1 = createticket(user,passengers,passengerscount,flight1,flight_1date,flight_1class,coupon,countrycode,email,mobile)
+    if f2:
+        ticket2 = createticket(user,passengers,passengerscount,flight2,flight_2date,flight_2class,coupon,countrycode,email,mobile)
+
+    if(flight_1class == 'Economy'):
         if f2:
-            ticket2 = createticket(request.user,passengers,passengerscount,flight2,flight_2date,flight_2class,coupon,countrycode,email,mobile)
-
-        if(flight_1class == 'Economy'):
-            if f2:
-                fare = (flight1.economy_fare*int(passengerscount))+(flight2.economy_fare*int(passengerscount))
-            else:
-                fare = flight1.economy_fare*int(passengerscount)
-        elif (flight_1class == 'Business'):
-            if f2:
-                fare = (flight1.business_fare*int(passengerscount))+(flight2.business_fare*int(passengerscount))
-            else:
-                fare = flight1.business_fare*int(passengerscount)
-        elif (flight_1class == 'First'):
-            if f2:
-                fare = (flight1.first_fare*int(passengerscount))+(flight2.first_fare*int(passengerscount))
-            else:
-                fare = flight1.first_fare*int(passengerscount)
-    except Exception as e:
-        # return HttpResponse(e)
-        print(e)
+            fare = (flight1.economy_fare*int(passengerscount))+(flight2.economy_fare*int(passengerscount))
+        else:
+            fare = flight1.economy_fare*int(passengerscount)
+    elif (flight_1class == 'Business'):
+        if f2:
+            fare = (flight1.business_fare*int(passengerscount))+(flight2.business_fare*int(passengerscount))
+        else:
+            fare = flight1.business_fare*int(passengerscount)
+    elif (flight_1class == 'First'):
+        if f2:
+            fare = (flight1.first_fare*int(passengerscount))+(flight2.first_fare*int(passengerscount))
+        else:
+            fare = flight1.first_fare*int(passengerscount)
     
 
+    print("hihhiihihihi", ticket1)
     if f2:    ##
-        return render_template("flight/payment.html", { ##
-            'fare': fare+FEE,   ##
-            'ticket': ticket1.id,   ##
-            'ticket2': ticket2.id   ##
-        })  ##
-    return render_template("flight/payment.html", {
-        'fare': fare+FEE,
-        'ticket': ticket1.id
-    })
+        return render_template("payment.html",  ##
+            fare=fare+FEE,   ##
+            ticket= ticket1.id,   ##
+            ticket2=ticket2.id   ##
+        )  ##
+    return render_template("payment.html", 
+        fare= fare+FEE,
+        ticket= ticket1.id
+    )
     #     else:
     #         return HttpResponseRedirect(reverse("login"))
     # else:
-    #     return HttpResponse("Method must be post.")
+    #     return HttpResponse("Method must be form.")
+
+def createticket(user,passengers,passengerscount,flight1,flight_1date,flight_1class,coupon,countrycode,email,mobile):
+    ###################
+    flight1ddate = datetime(int(flight_1date.split('-')[2]),int(flight_1date.split('-')[1]),int(flight_1date.split('-')[0]),flight1.depart_time.hour,flight1.depart_time.minute)
+    print("hildshaglsadhlgds", flight1ddate)
+    flight1adate = (flight1ddate + timedelta(microseconds=flight1.duration))
+    print(flight1adate)
+    ###################
+    ffre = 0.0
+    if flight_1class.lower() == 'first':
+        flight_fare = flight1.first_fare*int(passengerscount)
+        ffre = flight1.first_fare*int(passengerscount)
+    elif flight_1class.lower() == 'business':
+        flight_fare = flight1.business_fare*int(passengerscount)
+        ffre = flight1.business_fare*int(passengerscount)
+    else:
+        flight_fare = flight1.economy_fare*int(passengerscount)
+        ffre = flight1.economy_fare*int(passengerscount)
+
+    # return ticket
+    ticket = Ticket(
+        user=user,
+        ref_no = secrets.token_hex(3).upper(),
+        passengers=passengers,
+        flight=flight1,
+        flight_ddate=flight1ddate,
+        flight_adate=datetime(flight1adate.year,flight1adate.month,flight1adate.day),
+        flight_fare=flight_fare,
+        other_charges=FEE,
+        total_fare = ffre+FEE+0.0,
+        seat_class = flight_1class.lower(),
+        status = 'PENDING',
+        mobile = ('+'+countrycode+' '+mobile),
+        email = email,
+    )
+    db.session.add(ticket)
+    db.session.commit()
+    return ticket
+
+@flight_blueprint.route("/flight/getticket")
+def get_ticket():
+    ref = request.args.get("ref")
+    ticket1 = Ticket.query.filter_by(ref_no=ref).first()
+    print(ticket1, '"fdsafgddsaggadsfafs')
+    data = {
+        'ticket1':ticket1,
+        'current_year': datetime.now().year
+    }
+    return make_response(data)
+
+@flight_blueprint.route("/flight/ticket/api/<ref>")
+def ticket_data(ref):
+    ticket = Ticket.query.filter_by(ref_no=ref).first()
+    print("ticket", ticket)
+    return make_response({
+        'ref': ticket.ref_no,
+        'from': ticket.flight.origin.code,
+        'to': ticket.flight.destination.code,
+        'flight_date': ticket.flight_ddate,
+        'status': ticket.status
+    })
+
+@flight_blueprint.route("/bookings")
+def list_bookings():
+    for i in range(1, 18):
+        TicketPassenger.query.filter_by(id=i).delete()
+        db.session.commit()
+    if session.get("username"):
+        user = User.query.filter_by(username=session.get("username")).first()
+        tickets = Ticket.query.filter_by(user_id=user.id).order_by('booking_date').all()
+        print(tickets,"fdsgadafdgsdfd====================")
+        return render_template('bookings.html',
+            tickets=tickets
+        )
+    # else:
+    #     return HttpResponseRedirect(reverse('login'))

@@ -56,13 +56,13 @@ def callback():
         id_token=credentials._id_token,
         request=token_request
     )
-    session["google_id"] = id_info.get("sub")  #defing the results to show on the page
+    session["username"] = id_info.get("sub")  #defing the results to show on the page
     session["name"] = id_info.get("name")
     session["first_name"] = id_info.get("given_name")
     session["last_name"] = id_info.get("family_name")
-    if helper_login.check_username(session["google_id"]) == True:
+    if helper_login.check_username(session["username"]) == True:
         helper_login.add_google_user(
-                    session["google_id"],
+                    session["username"],
                     session["first_name"],
                     session["last_name"]
                 )

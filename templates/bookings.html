@@ -11,7 +11,7 @@
         <div style="display: flex; color: #666666; margin-top: auto">
           <div>
             <span style="font-size: 2.1em"
-              >{{ticket.flight_ddate | date:"d"}}</span
+              >{{ticket.flight_ddate.strfttime('%d')}}</span
             >
           </div>
           <div
@@ -25,10 +25,10 @@
           >
             <div style="margin: auto">
               <div style="margin-bottom: 1px">
-                {{ticket.flight_ddate | date:"D"}}
+                {{ticket.flight_ddate.strftime('%a')}}
               </div>
               <div style="margin-top: 1px">
-                {{ticket.flight_ddate | date:"M'y"}}
+                {{ticket.flight_ddate.strftime('%m,%Y')}}
               </div>
             </div>
           </div>
@@ -80,7 +80,7 @@
           <div class="ticket-action-div">
             {% if ticket.status == 'CONFIRMED' %}
             <!--<button class="btn btn-outline-primary btnp">Print Ticket</button>-->
-            <form action="{% url 'getticket' %}" method="get" target="_blank">
+            <form action="/flight/getticket" method="get" target="_blank">
               <input type="hidden" name="ref" value="{{ticket.ref_no}}" />
               <button type="submit" class="btn btn-outline-info btnp pbtn">
                 <svg

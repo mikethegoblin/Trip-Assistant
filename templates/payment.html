@@ -1,6 +1,6 @@
-{% extends 'layout.html' %} {% load static %} {% block head %}
+{% extends 'layout2.html' %} {% block head %}
 <title>Payment | Flight</title>
-<link rel="stylesheet" href="../static/css/payment_style.css" />
+<link rel="stylesheet" href="/static/css/payment_style.css" />
 {% endblock %} {% block body %}
 <section class="section section1">
   <div class="container">
@@ -9,13 +9,12 @@
         <div class="payment-box-head">
           <h5>Payment Details</h5>
           <div class="display-td">
-            <img class="card-img" src="../static/img/card.png" />
+            <img class="card-img" src="/static/img/card.png" />
           </div>
         </div>
       </div>
       <div class="payment-details-input-box">
-        <form action="{% url 'payment' %}" method="POST">
-          {% csrf_token %}
+        <form action="/flight/payment" method="POST">
           <!--<input type="hidden" name="payment_amount" value="{{fare}}">-->
           <input type="hidden" name="ticket" value="{{ticket}}" required />
           {% if ticket2 %}

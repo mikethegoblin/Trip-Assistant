@@ -1,5 +1,5 @@
 from database import db
-
+import datetime
 
 class User(db.Model):
     """
@@ -122,13 +122,13 @@ class Ticket(db.Model):
     flight_id = db.Column(db.Integer, db.ForeignKey("flight.id"))
     ref_no = db.Column(db.String(6), nullable=False)
     passengers = db.relationship("Passenger", secondary=TicketPassenger, backref="tickets")
-    flight_ddate = db.Column(db.Time, nullable=True)
-    flight_adate = db.Column(db.Time, nullable=True)
+    flight_ddate = db.Column(db.DateTime, nullable=True)
+    flight_adate = db.Column(db.DateTime, nullable=True)
     flight_fare = db.Column(db.Float, nullable=True)
     other_charges = db.Column(db.Float, nullable=True)
     total_fare = db.Column(db.Float, nullable=True)
     seat_class = db.Column(db.String(20), nullable=False)
-    booking_date = db.Column(db.Time, nullable=False)
+    booking_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     mobile = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(45), nullable=False)
     status = db.Column(db.String(45), nullable=False)
