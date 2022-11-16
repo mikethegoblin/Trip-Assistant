@@ -3,7 +3,7 @@ Handle the view for the ticket search
 Available values : ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST
 """
 import math
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from amadeus import Client, Location, ResponseError
 from flask import (Blueprint, make_response, redirect, render_template,
@@ -209,8 +209,10 @@ def search_flight():
 
 @flight_blueprint.route("/flight/review", methods=["GET"])
 def review():
-    flight_1 = request.args.get("flightId")
+    flight_1 = request.args.get("flight1Id")
+    print("flight id " , flight_1)
     date1 = request.args.get("flight1Date")
+    print(date1)
     seat = request.args.get("seatClass")
     round_trip = False
     if request.args.get("flight2Id"):
@@ -222,15 +224,17 @@ def review():
     
     # if request.user.is_authenticated:
     flight1 = Flight.query.filter_by(id=flight_1).first()
+    print(flight1 is None)
     flight1ddate = datetime(int(date1.split('-')[2]),int(date1.split('-')[1]),int(date1.split('-')[0]),flight1.depart_time.hour,flight1.depart_time.minute)
-    flight1adate = (flight1ddate + flight1.duration)
+    print(flight1.duration)
+    flight1adate = (flight1ddate + timedelta(microseconds=flight1.duration))
     flight2 = None
     flight2ddate = None
     flight2adate = None
     if round_trip:
         flight2 = Flight.query.filter_by(id=flight_2).first()
         flight2ddate = datetime(int(date2.split('-')[2]),int(date2.split('-')[1]),int(date2.split('-')[0]),flight2.depart_time.hour,flight2.depart_time.minute)
-        flight2adate = (flight2ddate + flight2.duration)
+        flight2adate = (flight2ddate + timedelta(microseconds=flight2.duration))
     if round_trip:
         return render_template("book.html", 
             flight1= flight1,
@@ -255,6 +259,7 @@ def review():
 @flight_blueprint.route("/flight/payment", methods=["POST"])
 def payment():
         #if request.user.is_authenticated:
+    print(request.form)
     ticket_id = request.form['ticket']
     t2 = False
     if request.form.get('ticket2'):
@@ -345,3 +350,70 @@ def bookings():
 #             return HttpResponseRedirect(reverse("login"))
 #     else:
 #         return HttpResponse("Method must be post.")
+
+@flight_blueprint.route("/flight/ticket/book", methods=["POST"])
+def book():
+    #if request.user.is_authenticated:
+    flight_1 = request.POST.get('flight1')
+    flight_1date = request.POST.get('flight1Date')
+    flight_1class = request.POST.get('flight1Class')
+    f2 = False
+    if request.POST.get('flight2'):
+        flight_2 = request.POST.get('flight2')
+        flight_2date = request.POST.get('flight2Date')
+        flight_2class = request.POST.get('flight2Class')
+        f2 = True
+    countrycode = request.POST['countryCode']
+    mobile = request.POST['mobile']
+    email = request.POST['email']
+    flight1 = Flight.objects.get(id=flight_1)
+    if f2:
+        flight2 = Flight.objects.get(id=flight_2)
+    passengerscount = request.POST['passengersCount']
+    passengers=[]
+    for i in range(1,int(passengerscount)+1):
+        fname = request.POST[f'passenger{i}FName']
+        lname = request.POST[f'passenger{i}LName']
+        gender = request.POST[f'passenger{i}Gender']
+        passengers.append(Passenger.objects.create(first_name=fname,last_name=lname,gender=gender.lower()))
+    coupon = request.POST.get('coupon')
+    
+    try:
+        ticket1 = createticket(request.user,passengers,passengerscount,flight1,flight_1date,flight_1class,coupon,countrycode,email,mobile)
+        if f2:
+            ticket2 = createticket(request.user,passengers,passengerscount,flight2,flight_2date,flight_2class,coupon,countrycode,email,mobile)
+
+        if(flight_1class == 'Economy'):
+            if f2:
+                fare = (flight1.economy_fare*int(passengerscount))+(flight2.economy_fare*int(passengerscount))
+            else:
+                fare = flight1.economy_fare*int(passengerscount)
+        elif (flight_1class == 'Business'):
+            if f2:
+                fare = (flight1.business_fare*int(passengerscount))+(flight2.business_fare*int(passengerscount))
+            else:
+                fare = flight1.business_fare*int(passengerscount)
+        elif (flight_1class == 'First'):
+            if f2:
+                fare = (flight1.first_fare*int(passengerscount))+(flight2.first_fare*int(passengerscount))
+            else:
+                fare = flight1.first_fare*int(passengerscount)
+    except Exception as e:
+        # return HttpResponse(e)
+        print(e)
+    
+
+    if f2:    ##
+        return render_template("flight/payment.html", { ##
+            'fare': fare+FEE,   ##
+            'ticket': ticket1.id,   ##
+            'ticket2': ticket2.id   ##
+        })  ##
+    return render_template("flight/payment.html", {
+        'fare': fare+FEE,
+        'ticket': ticket1.id
+    })
+    #     else:
+    #         return HttpResponseRedirect(reverse("login"))
+    # else:
+    #     return HttpResponse("Method must be post.")
