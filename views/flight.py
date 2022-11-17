@@ -311,6 +311,28 @@ def payment():
 # else:
 #     return HttpResponseRedirect(reverse('login'))
 
+@flight_blueprint.route("/ticket/cancel", methods=["POST"])
+def cancel_ticket():
+    ref = request.form.get("ref")
+    ticket = Ticket.query.filter_by(ref_no = ref).first()
+    user_id = ticket.user_id
+    username = session["username"]
+    ticket_user = User.query.filter_by(id = user_id).first()
+    user = User.query.filter_by(username=username).first()
+    if ticket_user.id == user.id:
+        ticket.status = 'CANCELLED'
+        db.session.commit()
+        return make_response(
+            {'success': True}
+        )
+    else:
+        return make_response(
+            {
+                'success': False,
+                'error': "User unauthorised"
+            }
+        )
+        
 # @csrf_exempt
 # def cancel_ticket(request):
 #     if request.method == 'POST':
