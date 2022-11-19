@@ -87,7 +87,7 @@ class Flight(db.Model):
     business_fare = db.Column(db.Float, nullable=True)
     first_fare = db.Column(db.Float, nullable=True)
     # depart_day = db.relationship("Week", backref="flights_of_the_day", foreign_keys="Week.flight_id")
-    depart_day = db.Column(db.Integer, db.ForeignKey("week.id"))
+    depart_day = db.Column(db.Integer, db.ForeignKey("week.id", name="week_id"))
     tickets = db.relationship("Ticket", backref="flight")
     
     def __str__(self):
@@ -109,8 +109,8 @@ class Passenger(db.Model):
 TicketPassenger = db.Table(
     "ticket_passenger",
     db.Column("id", db.Integer, autoincrement=True, primary_key=True),
-    db.Column("ticket_id", db.Integer, db.ForeignKey('ticket.id')),
-    db.Column("passenger_id", db.Integer, db.ForeignKey('passenger.id'))
+    db.Column("ticket_id", db.Integer, db.ForeignKey('ticket.id', ondelete="cascade", name="ticket_id")),
+    db.Column("passenger_id", db.Integer, db.ForeignKey('passenger.id', ondelete="cascade", name="passenger_id"),)
 )
 
 class Ticket(db.Model):
@@ -121,7 +121,7 @@ class Ticket(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     flight_id = db.Column(db.Integer, db.ForeignKey("flight.id"))
     ref_no = db.Column(db.String(6), nullable=False)
-    passengers = db.relationship("Passenger", secondary=TicketPassenger, backref="tickets")
+    passengers = db.relationship("Passenger", secondary=TicketPassenger, backref="tickets", cascade="all, delete, delete-orphan")
     flight_ddate = db.Column(db.DateTime, nullable=True)
     flight_adate = db.Column(db.DateTime, nullable=True)
     flight_fare = db.Column(db.Float, nullable=True)
