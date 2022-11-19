@@ -6,6 +6,7 @@ import pathlib
 
 import google.auth.transport.requests
 import helper.helper_login as helper_login
+import helper.helper_database as helper_database
 import requests
 from database import db
 from flask import Blueprint, abort, redirect, render_template, request, session
@@ -60,8 +61,8 @@ def callback():
     session["name"] = id_info.get("name")
     session["first_name"] = id_info.get("given_name")
     session["last_name"] = id_info.get("family_name")
-    if helper_login.check_username(session["username"]) == True:
-        helper_login.add_google_user(
+    if helper_login.username_exist(session["username"]) == True:
+        helper_database.add_google_user(
                     session["username"],
                     session["first_name"],
                     session["last_name"]

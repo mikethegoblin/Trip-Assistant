@@ -29,6 +29,11 @@ amadeus = Client(
     client_secret=API_SECRET
 )
 
+@flight_blueprint.route('/logout')
+def log_out():
+    session.clear()
+    return redirect('/login')
+
 @flight_blueprint.route("/flight", methods=["GET"])
 def flight():
     # username = session["username"]
