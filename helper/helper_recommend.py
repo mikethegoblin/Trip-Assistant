@@ -62,5 +62,7 @@ def get_recommendation(city, levels):
     column = preferences
     recommended_city = find_similarity(column, user, number, scores, city)
     country, response, breakdown = final_answer(df, recommended_city, data)
+    breakdown.at[3,"Category"]= "Internet Speed"
+    print(breakdown)
     table_html = breakdown.to_html()
     return recommended_city, country, response, table_html, locations

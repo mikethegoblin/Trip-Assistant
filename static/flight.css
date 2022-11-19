@@ -7,7 +7,13 @@
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
-
+table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th {
+    height: 20px;
+  }
 body {
     /* background-color: rgb(20, 117, 220); */
     background-image: linear-gradient(135deg, rgb(20, 117, 220), #b8017b);
@@ -16,6 +22,9 @@ body {
 html {
     height: 100%;
 }
+.child {
+    display: inline-block;
+  }
 
 .wrapper {
     max-width: 800px;

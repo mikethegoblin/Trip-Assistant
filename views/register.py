@@ -3,6 +3,7 @@ Handle the view for the user registration system
 """
 from flask import Blueprint, redirect, render_template, request, session
 from helper import helper_register as helper_register
+from helper import helper_database as helper_database
 
 register_blueprint = Blueprint(
     "register", __name__, static_folder="static", template_folder="templates"
