@@ -121,7 +121,7 @@ class Ticket(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     flight_id = db.Column(db.Integer, db.ForeignKey("flight.id"))
     ref_no = db.Column(db.String(6), nullable=False)
-    passengers = db.relationship("Passenger", secondary=TicketPassenger, backref="tickets", cascade="all, delete, delete-orphan")
+    passengers = db.relationship("Passenger", secondary=TicketPassenger, backref="tickets", cascade="all, delete")
     flight_ddate = db.Column(db.DateTime, nullable=True)
     flight_adate = db.Column(db.DateTime, nullable=True)
     flight_fare = db.Column(db.Float, nullable=True)
