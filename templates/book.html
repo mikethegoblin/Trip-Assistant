@@ -851,34 +851,36 @@
             <div class="base-fare-value">
               {% if seat == 'First' %} $
               <span>
-                {% if flight2 %} {{flight1.first_fare+flight2.first_fare}} {%
-                else %} {{flight1.first_fare}} {% endif %}
+                {% if flight2 %}
+                {{str(round(flight1.first_fare+flight2.first_fare,2))}} {% else
+                %} {{flight1.first_fare}} {% endif %}
               </span>
               <input
                 type="hidden"
                 id="basefare"
-                value="{% if flight2 %}{{flight1.first_fare+flight2.first_fare}}{% else %}{{flight1.first_fare}}{% endif %}"
+                value="{% if flight2 %}{{str(round(flight1.first_fare+flight2.first_fare,2))}}{% else %}{{flight1.first_fare}}{% endif %}"
               />
               {% elif seat == 'Business' %} $
               <span>
-                {% if flight2 %} {{flight1.business_fare+
-                flight2.business_fare}} {% else %} {{flight1.business_fare}} {%
-                endif %}
+                {% if flight2 %} {{str(round(flight1.business_fare+
+                flight2.business_fare,2))}} {% else %} {{flight1.business_fare}}
+                {% endif %}
               </span>
               <input
                 type="hidden"
                 id="basefare"
-                value="{% if flight2 %}{{flight1.business_fare+flight2.business_fare}}{% else %}{{flight1.business_fare}}{% endif %}"
+                value="{% if flight2 %}{{str(round(flight1.business_fare+flight2.business_fare,2))}}{% else %}{{flight1.business_fare}}{% endif %}"
               />
               {% elif seat == 'Economy' %} $
               <span>
-                {% if flight2 %} {{flight1.economy_fare+flight2.economy_fare}}
-                {% else %} {{flight1.economy_fare}} {% endif %}
+                {% if flight2 %}
+                {{str(round(flight1.economy_fare+flight2.economy_fare,2))}} {%
+                else %} {{flight1.economy_fare}} {% endif %}
               </span>
               <input
                 type="hidden"
                 id="basefare"
-                value="{% if flight2 %}{{flight1.economy_fare+flight2.economy_fare}}{% else %}{{flight1.economy_fare}}{% endif %}"
+                value="{% if flight2 %}{{str(round(flight1.economy_fare+flight2.economy_fare,2))}}{% else %}{{flight1.economy_fare}}{% endif %}"
               />
               {% endif %}
             </div>
@@ -894,20 +896,21 @@
             <div class="total-fare-value">
               {% if seat == 'First' %} $
               <span>
-                {% if flight2 %} {{flight1.first_fare+flight2.first_fare+fee}}
-                {% else %} {{flight1.first_fare+fee}} {% endif %}
+                {% if flight2 %}
+                {{str(round(flight1.first_fare+flight2.first_fare+fee,2))}} {%
+                else %} {{flight1.first_fare+fee}} {% endif %}
               </span>
               {% elif seat == 'Business' %} $
               <span>
                 {% if flight2 %}
-                {{flight1.business_fare+flight2.business_fare+fee}} {% else %}
-                {{flight1.business_fare+fee}} {% endif %}
+                {{str(round(flight1.business_fare+flight2.business_fare+fee,2))}}
+                {% else %} {{flight1.business_fare+fee}} {% endif %}
               </span>
               {% elif seat == 'Economy' %} $
               <span>
                 {% if flight2 %}
-                {{flight1.economy_fare+flight2.economy_fare+fee}} {% else %}
-                {{flight1.economy_fare+fee}} {% endif %}
+                {{str(round(flight1.economy_fare+flight2.economy_fare+fee, 2))}}
+                {% else %} {{flight1.economy_fare+fee}} {% endif %}
               </span>
               {% endif %}
             </div>
