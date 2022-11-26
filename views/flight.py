@@ -232,7 +232,6 @@ def review():
     
     # if request.user.is_authenticated:
     flight1 = Flight.query.filter_by(id=flight_1).first()
-    print(flight1 is None)
     flight1ddate = datetime(int(date1.split('-')[2]),int(date1.split('-')[1]),int(date1.split('-')[0]),flight1.depart_time.hour,flight1.depart_time.minute)
     print(flight1.duration)
     flight1adate = (flight1ddate + timedelta(microseconds=flight1.duration))

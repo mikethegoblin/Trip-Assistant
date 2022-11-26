@@ -73,11 +73,11 @@
       <div class="v-line"></div>
       <div class="trip-modify">
         <form action="/" method="POST">
-          <input type="hidden" name="Origin" value="{{origin.code|upper}}" />
+          <input type="hidden" name="Origin" value="{{origin.code.upper()}}" />
           <input
             type="hidden"
             name="Destination"
-            value="{{destination.code|upper}}"
+            value="{{destination.code.upper()}}"
           />
           <input
             type="hidden"
@@ -105,11 +105,11 @@
     <div class="container">
       <div class="trip-modify">
         <form action="/" method="POST">
-          <input type="hidden" name="Origin" value="{{origin.code|upper}}" />
+          <input type="hidden" name="Origin" value="{{origin.code.upper()}}" />
           <input
             type="hidden"
             name="Destination"
-            value="{{destination.code|upper}}"
+            value="{{destination.code.upper()}}"
           />
           <input
             type="hidden"
@@ -611,16 +611,20 @@
                     </h5>
                   </div>
                   <div class="flight-details-btn">
-                    {% if trip_type == '2' %} {% if forloop.couter == 1
-                    %}checked{% endif %} <input type="radio"
-                    class="flight1-radio r-b" name="test1" value="{{flight.id}}"
-                    data-plane='{{flight.plane}}'
-                    data-depart="{{flight.depart_time.strftime('%H:%M') }}"
-                    data-arrive="{{flight.arrival_time.strftime('%H:%M') }}"
-                    data-fare="{% if seat == 'Economy' %}
+                    {% if trip_type == '2' %}
+                    <input
+                      type="radio"
+                      class="flight1-radio r-b"
+                      name="test1"
+                      value="{{flight.id}}"
+                      data-plane="{{flight.plane}}"
+                      data-depart="{{flight.depart_time.strftime('%H:%M') }}"
+                      data-arrive="{{flight.arrival_time.strftime('%H:%M') }}"
+                      data-fare="{% if seat == 'Economy' %}
                     {{flight.economy_fare}} {% elif seat == 'Business' %}
                     {{flight.business_fare}} {% else %} {{flight.first_fare}} {%
-                    endif %}" {% if forloop.counter == 1 %}checked{% endif %}>
+                    endif %}"
+                    />
                     {% else %}
                     <form
                       action="/flight/review"
@@ -1081,19 +1085,23 @@
                     </h5>
                   </div>
                   <div class="flight-details-btn">
-                    {% if trip_type == '2' %} {% if forloop.couter == 1
-                    %}checked{% endif %} <input type="radio"
-                    class="flight2-radio r-b" name="test2"
-                    value="{{flight2.id}}" data-plane='{{flight2.plane}}'
-                    data-depart="{{flight2.depart_time.strftime('%H:%M') }}"
-                    data-arrive="{{flight2.arrival_time.strftime('%H:%M') }}"
-                    data-fare="{% if seat == 'Economy' %}
+                    {% if trip_type == '2' %}
+                    <input
+                      type="radio"
+                      class="flight2-radio r-b"
+                      name="test2"
+                      value="{{flight2.id}}"
+                      data-plane="{{flight2.plane}}"
+                      data-depart="{{flight2.depart_time.strftime('%H:%M') }}"
+                      data-arrive="{{flight2.arrival_time.strftime('%H:%M') }}"
+                      data-fare="{% if seat == 'Economy' %}
                     {{flight2.economy_fare}} {% elif seat == 'Business' %}
                     {{flight2.business_fare}} {% else %} {{flight2.first_fare}}
-                    {% endif %}" {% if forloop.counter == 1 %}checked{% endif
-                    %}> {% else %}
+                    {% endif %}"
+                    />
+                    {% else %}
                     <form
-                      action="url/review"
+                      action="/flight/review"
                       method="GET"
                       style="display: flex"
                     >
@@ -1157,7 +1165,7 @@
     <div class="col-3 selection1">
       <div class="white">
         <div>
-          <span>{{origin.code|upper}}</span>
+          <span>{{origin.code.upper()}}</span>
           <svg
             width="1em"
             height="1em"
@@ -1171,23 +1179,23 @@
               d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"
             />
           </svg>
-          <span>{{destination.code|upper}}</span>&nbsp;&nbsp;@&nbsp;&nbsp;$
+          <span>{{destination.code.upper()}}</span>&nbsp;&nbsp;$
           <span id="select-f1-fare">
-            {% if seat == "Economy" %} {{flights.all.0.economy_fare}} {% elif
-            seat == "Business" %} {{flights.all.0.business_fare}} {% else %}
-            {{flights.all.0.first_fare}} {% endif %} </span
+            {% if seat == "Economy" %} {{flights[0].economy_fare}} {% elif seat
+            == "Business" %} {{flights[0].business_fare}} {% else %}
+            {{flights[0].first_fare}} {% endif %} </span
           ><!---->
         </div>
         <div class="white-2">
-          <span id="select-f1-plane">{{flights.all.0.plane}}</span
+          <span id="select-f1-plane">{{flights[0].plane}}</span
           ><!---->
           &nbsp;&nbsp;
           <span id="select-f1-depart"
-            >{{flights.all.0.depart_time.strftime('%H:%M') }}</span
+            >{{flights[0].depart_time.strftime('%H:%M') }}</span
           ><!---->
           •
           <span id="select-f1-arrive"
-            >{{flights.all.0.arrival_time.strftime('%H:%M') }}</span
+            >{{flights[0].arrival_time.strftime('%H:%M') }}</span
           ><!---->
         </div>
       </div>
@@ -1195,7 +1203,7 @@
     <div class="col-3 selection2">
       <div class="white">
         <div>
-          <span>{{destination.code|upper}}</span>
+          <span>{{destination.code.upper()}}</span>
           <svg
             width="1em"
             height="1em"
@@ -1209,27 +1217,26 @@
               d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"
             />
           </svg>
-          <span>{{origin.code|upper}}</span>
-          &nbsp;&nbsp;@&nbsp;&nbsp;$ {% if flights2 %}
-          &nbsp;&nbsp;@&nbsp;&nbsp;$
+          <span>{{origin.code.upper()}}</span>
+          &nbsp;&nbsp;$ {% if flights2 %}
           <span id="select-f2-fare">
-            {% if seat == "Economy" %} {{flights2.all.0.economy_fare}} {% elif
-            seat == "Business" %} {{flights2.all.0.business_fare}} {% else %}
-            {{flights2.all.0.first_fare}} {% endif %} </span
+            {% if seat == "Economy" %} {{flights2[0].economy_fare}} {% elif seat
+            == "Business" %} {{flights2[0].business_fare}} {% else %}
+            {{flights2[0].first_fare}} {% endif %} </span
           ><!---->
           {% endif %}
         </div>
         <div class="white-2">
           {% if flights2 %}
-          <span id="select-f2-plane">{{flights2.all.0.plane}}</span
+          <span id="select-f2-plane">{{flights2[0].plane}}</span
           ><!---->
           &nbsp;&nbsp;
           <span id="select-f2-depart"
-            >{{flights2.all.0.depart_time.strftime('%H:%M') }}</span
+            >{{flights2[0].depart_time.strftime('%H:%M') }}</span
           ><!---->
           •
           <span id="select-f2-arrive"
-            >{{flights2.all.0.arrival_time.strftime('%H:%M') }}</span
+            >{{flights2[0].arrival_time.strftime('%H:%M') }}</span
           ><!---->
           {% else %}
           <span id="select-f2-plane" style="letter-spacing: 2px !important"
@@ -1249,14 +1256,13 @@
             >$
             <span id="select-total-fare">
               {% if flights2 %} {% if seat == "Economy" %}
-              {{flights.all.0.economy_fare + flights2.all.0.economy_fare}} {%
-              elif seat == "Business" %}
-              {{flights.all.0.business_fare+flights2.all.0.business_fare}} {%
-              else %} {{flights.all.0.first_fare+flights2.all.0.first_fare}} {%
-              endif %} {% else %} {% if seat == "Economy" %}
-              {{flights.all.0.economy_fare}} {% elif seat == "Business" %}
-              {{flights.all.0.business_fare}} {% else %}
-              {{flights.all.0.first_fare}} {% endif %} {% endif %}
+              {{flights[0].economy_fare + flights2[0].economy_fare}} {% elif
+              seat == "Business" %}
+              {{flights[0].business_fare+flights2[0].business_fare}} {% else %}
+              {{flights[0].first_fare+flights2[0].first_fare}} {% endif %} {%
+              else %} {% if seat == "Economy" %} {{flights[0].economy_fare}} {%
+              elif seat == "Business" %} {{flights[0].business_fare}} {% else %}
+              {{flights[0].first_fare}} {% endif %} {% endif %}
             </span>
           </span>
         </div>
@@ -1265,11 +1271,11 @@
     <div class="col-3 selection-confirm">
       <div class="white">
         <div>
-          <form action="url/review" method="GET">
+          <form action="/flight/review" method="GET">
             <input
               type="hidden"
               name="flight1Id"
-              value="{{flights.all.0.id}}"
+              value="{{flights[0].id}}"
               id="flt1"
             />
             <input
@@ -1281,7 +1287,7 @@
             <input
               type="hidden"
               name="flight2Id"
-              value="{{flights2.all.0.id}}"
+              value="{{flights2[0].id}}"
               id="flt2"
             />
             <input
@@ -1321,25 +1327,25 @@
               >$
               <span id="select-total-fare-media">
                 {% if flights2 %} {% if seat == "Economy" %}
-                {{flights.all.0.economy_fare+flights2.all.0.economy_fare}} {%
-                elif seat == "Business" %}
-                {{flights.all.0.business_fare+flights2.all.0.business_fare}} {%
-                else %} {{flights.all.0.first_fare +flights2.all.0.first_fare}}
-                {% endif %} {% else %} {% if seat == "Economy" %}
-                {{flights.all.0.economy_fare}} {% elif seat == "Business" %}
-                {{flights.all.0.business_fare}} {% else %}
-                {{flights.all.0.first_fare}} {% endif %} {% endif %}
+                {{flights[0].economy_fare+flights2[0].economy_fare}} {% elif
+                seat == "Business" %}
+                {{flights[0].business_fare+flights2[0].business_fare}} {% else
+                %} {{flights[0].first_fare +flights2[0].first_fare}} {% endif %}
+                {% else %} {% if seat == "Economy" %}
+                {{flights[0].economy_fare}} {% elif seat == "Business" %}
+                {{flights[0].business_fare}} {% else %}
+                {{flights[0].first_fare}} {% endif %} {% endif %}
               </span>
             </span>
           </div>
         </div>
         <div class="col-5" style="display: flex">
           <div style="margin: auto">
-            <form action="url/review" method="GET">
+            <form action="/flight/review" method="GET">
               <input
                 type="hidden"
                 name="flight1Id"
-                value="{{flights.all.0.id}}"
+                value="{{flights[0].id}}"
                 id="flt1"
               />
               <input
@@ -1351,7 +1357,7 @@
               <input
                 type="hidden"
                 name="flight2Id"
-                value="{{flights2.all.0.id}}"
+                value="{{flights2[0].id}}"
                 id="flt2"
               />
               <input
