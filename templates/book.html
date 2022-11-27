@@ -874,7 +874,7 @@
               {% elif seat == 'Economy' %} $
               <span>
                 {% if flight2 %} {{
-                "$%.2f"|format(flight1.economy_fare+flight2.economy_fare) }} {%
+                "%.2f"|format(flight1.economy_fare+flight2.economy_fare) }} {%
                 else %} {{flight1.economy_fare}} {% endif %}
               </span>
               <input
@@ -897,19 +897,19 @@
               {% if seat == 'First' %} $
               <span>
                 {% if flight2 %}
-                {{'$%.2f'|format(flight1.first_fare+flight2.first_fare+fee)}} {%
+                {{'%.2f'|format(flight1.first_fare+flight2.first_fare+fee)}} {%
                 else %}{{flight1.first_fare+fee}} {% endif %}
               </span>
               {% elif seat == 'Business' %} $
               <span>
                 {% if flight2 %}
-                {{'$%.2f'|format(flight1.business_fare+flight2.business_fare+fee)}}
+                {{'%.2f'|format(flight1.business_fare+flight2.business_fare+fee)}}
                 {% else%} {{flight1.business_fare+fee}} {% endif %}
               </span>
               {% elif seat == 'Economy' %} $
               <span>
                 {% if flight2 %}
-                {{'$%.2f'|format(flight1.economy_fare+flight2.economy_fare+fee)}}
+                {{'%.2f'|format(flight1.economy_fare+flight2.economy_fare+fee)}}
                 {% else%} {{flight1.economy_fare+fee}} {% endif %}
               </span>
               {% endif %}
