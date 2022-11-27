@@ -38,7 +38,11 @@ def log_out():
 def flight():
     # username = session["username"]
     # recommended_cities = get_city_recommendations(username)
-    return render_template('flight.html')
+    username = session.get("username")
+    user = None
+    if username:
+        user = User.query.filter_by(username=username).first()
+    return render_template('flight.html', user = user)
 
 @flight_blueprint.route("/flight/select_place/<param>", methods=["GET"])
 def select_destination(param):
@@ -204,6 +208,7 @@ def search_flight():
     else:
         return render_template(
             "search.html", 
+            user = user,
             flights= flights,
             origin= origin,
             destination= destination,
@@ -217,6 +222,10 @@ def search_flight():
 
 @flight_blueprint.route("/flight/review", methods=["GET"])
 def review():
+    username = session.get("username")
+    user = None
+    if username:
+        user = User.query.filter_by(username=username).first()
     flight_1 = request.args.get("flight1Id")
     print("flight id " , flight_1)
     date1 = request.args.get("flight1Date")
@@ -232,7 +241,6 @@ def review():
     
     # if request.user.is_authenticated:
     flight1 = Flight.query.filter_by(id=flight_1).first()
-    print(flight1 is None)
     flight1ddate = datetime(int(date1.split('-')[2]),int(date1.split('-')[1]),int(date1.split('-')[0]),flight1.depart_time.hour,flight1.depart_time.minute)
     print(flight1.duration)
     flight1adate = (flight1ddate + timedelta(microseconds=flight1.duration))
@@ -245,6 +253,7 @@ def review():
         flight2adate = (flight2ddate + timedelta(microseconds=flight2.duration))
     if round_trip:
         return render_template("book.html", 
+            user = user,
             flight1= flight1,
             flight2= flight2,
             flight1ddate= flight1ddate,
@@ -255,6 +264,7 @@ def review():
             fee= FEE
         )
     return render_template("book.html", 
+        user = user,
         flight1=flight1,
         flight1ddate=flight1ddate,
         flight1adate=flight1adate,
@@ -437,11 +447,13 @@ def book():
     print("hihhiihihihi", ticket1)
     if f2:    ##
         return render_template("payment.html",  ##
+            user = user,
             fare=fare+FEE,   ##
             ticket= ticket1.id,   ##
             ticket2=ticket2.id   ##
         )  ##
     return render_template("payment.html", 
+        user = user,
         fare= fare+FEE,
         ticket= ticket1.id
     )
@@ -519,7 +531,7 @@ def list_bookings():
         tickets = Ticket.query.filter_by(user_id=user.id).order_by('booking_date').all()
         print(tickets,"fdsgadafdgsdfd====================")
         return render_template('bookings.html',
-            tickets=tickets
+            tickets=tickets, user = user
         )
     # else:
     #     return HttpResponseRedirect(reverse('login'))

@@ -1,327 +1,297 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <title></title>
-    <meta name="description" content="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="static/flight.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-      crossorigin="anonymous"
-    />
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"></script>
-  </head>
-  <body>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+{% extends 'layout.html' %} {% block head %}
+<link rel="stylesheet" href="static/css/ticket_search.css" />
+<link rel="icon" type="image/ico" href="../static/img/favicon.ico" />
+<script
+  type="text/javascript"
+  src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"
+></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<title>Ticket Search</title>
+{% endblock %} {% block body %}
 
-        <div class="wrapper bg-white border rounded" id="form-container">
-      <div id="form-title-container">
-        <h4>Book Flights With Ease</h4>
-      </div>
+<section class="section section1">
+  <div class="wrapper bg-white border rounded" id="form-container">
+    <div id="form-title-container">
+      <h4>Book Flights With Ease</h4>
+    </div>
 
-      <form action="/flight/search">
-        <div
-          class="form-group border-bottom d-flex align-items-center justify-content-start flex-wrap"
-        >
-          <label class="option my-sm-0 my-2">
-            <input type="radio" name="TripType" value="2" id="return" checked />Round Trip
-            <span class="checkmark"></span>
-          </label>
-          <label class="option my-sm-0 my-2 ml-5">
-            <input type="radio" name="TripType" value="1" id="one-way"/>One Way
-            <span class="checkmark"></span>
-          </label>
-          <!-- <div class="d-flex align-items-center my-sm-0 my-2">
+    <form action="/flight/search">
+      <div
+        class="form-group border-bottom d-flex align-items-center justify-content-start flex-wrap"
+      >
+        <label class="option my-sm-0 my-2">
+          <input
+            type="radio"
+            name="TripType"
+            value="2"
+            id="return"
+            checked
+          />Round Trip
+          <span class="checkmark"></span>
+        </label>
+        <label class="option my-sm-0 my-2 ml-5">
+          <input type="radio" name="TripType" value="1" id="one-way" />One Way
+          <span class="checkmark"></span>
+        </label>
+        <!-- <div class="d-flex align-items-center my-sm-0 my-2">
                 <a href="#" class="text-decoration-none">
                     Multi-city/Stopovers <span class="fas fa-angle-right ps-2 text-primary"></span>
                 </a>
             </div> -->
-        </div>
-        <div class="form-group d-sm-flex margin">
-          <div
-            class="d-flex align-items-center flex-column flex-fill me-sm-1 my-sm-0 my-4 position-relative w-50"
-          >
-            <input
-              type="text"
-              required
-              placeholder="From"
-              class="form-control border-bottom" 
-              id="dep-from"
-              name="Origin"
-            />
-            <div class="label" id="from">
-              <ul id="origin_list" class="list-group"></ul>
-            </div>
-            <span class="fas fa-dot-circle text-muted"></span>
-          </div>
-          
-          <div
-            class="d-flex align-items-center flex-column flex-fill ms-sm-1 my-sm-0 my-4 position-relative w-50"
-          >
-            <input type="text" required placeholder="To" class="form-control border-bottom" id="dep-to" name="Destination"/>
-            <div class="label" id="to">
-              <ul id="destination_list" class="list-group"></ul>
-            </div>
-            <span class="fas fa-map-marker text-muted"></span>
-          </div>
-        </div>
-        <div class="form-group d-sm-flex mt-sm">
-          <div
-            class="d-flex align-items-center flex-fill me-sm1 my-sm-0 border-bottom position-relative w-50"
-          >
-            <input
-              type="date"
-              required
-              placeholder="Depart Date"
-              class="form-control"
-              name="DepartDate"
-            />
-            <div class="label" id="depart"></div>
-          </div>
-          <div
-            class="d-flex align-items-center flex-fill ms-sm-1 my-sm-0 my-4 border-bottom position-relative w-50"
-            id="return-box"
-          >
-            <input
-              type="date"
-              placeholder="Return Date"
-              class="form-control"
-              name="ReturnDate"
-            />
-            <div class="label" id="return"></div>
-          </div>
-        </div>
+      </div>
+      <div class="form-group d-sm-flex margin">
         <div
-          class="form-group d-flex align-items-center margin position-relative"
+          class="d-flex align-items-center flex-column flex-fill me-sm-1 my-sm-0 my-4 position-relative w-50"
         >
-          
-          <select
-            class="form-select form-select-lg mb-3 w-100"
-            aria-label=".form-select-lg example"
-            name="SeatClass"
-          >
-            <option selected>Select A Class</option>
-            <option value="economy">ECONOMY</option>
-            <option value="business">BUSINESS</option>
-            <option value="first">FIRST</option>
-          </select>
+          <input
+            type="text"
+            required
+            placeholder="From"
+            class="form-control border-bottom"
+            id="dep-from"
+            name="Origin"
+          />
+          <div class="label" id="from">
+            <ul id="origin_list" class="list-group"></ul>
+          </div>
+          <span class="fas fa-dot-circle text-muted"></span>
         </div>
-        <div class="form-group my-3 d-flex justify-content-center text-center">
-      
-          <button class="btn btn-primary rounded-5 p-3 w-100" type="submit">
-            Search Flights
-          </button>
-        </div>
-      </form>
-    </div>
 
-    <div class="wrapper">
-      <div class="card w-50">
-        <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
-        <div class="card-body">
-          <h5 class="card-title">Don't know where to go?</h5>
-          <p class="card-text">
-            Take a short quiz, and we'll help you figure out your next ideal
-            destination!
-          </p>
-          <a href="/recommend" class="btn btn-primary">Take a look</a>
+        <div
+          class="d-flex align-items-center flex-column flex-fill ms-sm-1 my-sm-0 my-4 position-relative w-50"
+        >
+          <input
+            type="text"
+            required
+            placeholder="To"
+            class="form-control border-bottom"
+            id="dep-to"
+            name="Destination"
+          />
+          <div class="label" id="to">
+            <ul id="destination_list" class="list-group"></ul>
+          </div>
+          <span class="fas fa-map-marker text-muted"></span>
         </div>
       </div>
+      <div class="form-group d-sm-flex mt-sm">
+        <div
+          class="d-flex align-items-center flex-fill me-sm1 my-sm-0 border-bottom position-relative w-50"
+        >
+          <input
+            type="date"
+            required
+            placeholder="Depart Date"
+            class="form-control"
+            name="DepartDate"
+          />
+          <div class="label" id="depart"></div>
+        </div>
+        <div
+          class="d-flex align-items-center flex-fill ms-sm-1 my-sm-0 my-4 border-bottom position-relative w-50"
+          id="return-box"
+        >
+          <input
+            type="date"
+            placeholder="Return Date"
+            class="form-control"
+            name="ReturnDate"
+          />
+          <div class="label" id="return"></div>
+        </div>
+      </div>
+      <div
+        class="form-group d-flex align-items-center margin position-relative"
+      >
+        <select
+          class="form-select form-select-lg mb-3 w-100"
+          aria-label=".form-select-lg example"
+          name="SeatClass"
+        >
+          <option selected>Select A Class</option>
+          <option value="economy">ECONOMY</option>
+          <option value="business">BUSINESS</option>
+          <option value="first">FIRST</option>
+        </select>
+      </div>
+      <div class="form-group my-3 d-flex justify-content-center text-center">
+        <button class="btn btn-primary rounded-5 p-3 w-100" type="submit">
+          Search Flights
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="wrapper">
+    <div class="card w-50">
+      <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
+      <div class="card-body">
+        <h5 class="card-title">Don't know where to go?</h5>
+        <p class="card-text">
+          Take a short quiz, and we'll help you figure out your next ideal
+          destination!
+        </p>
+        <a href="/recommend" class="btn btn-primary">Take a look</a>
+      </div>
     </div>
+  </div>
+</section>
 
+<!-- <script
+  src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+  integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+  integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+  crossorigin="anonymous"
+></script> -->
 
+<script type="text/javascript">
+  let request_origin = null;
+  let request_dest = null;
+  function handleResponseOrigin(response) {
+    let inner = "";
+    response = response["data"];
+    console.log(response);
+    if (response.length !== 0 && $("#dep-from").val() !== "") {
+      removeElementsOrigin();
+      for (let airportInfo of response) {
+        let listItem = document.createElement("li");
+        listItem.classList.add(
+          "list-items-origin",
+          "list-group-item",
+          "rounded-0"
+        );
+        curString = airportInfo.toString();
+        listItem.setAttribute(
+          "onclick",
+          "displayOrigin('" + airportInfo[0] + "')"
+        );
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-      crossorigin="anonymous"
-    ></script>
-
-    <script type="text/javascript">
-      let request_origin = null;
-      let request_dest = null;
-      function handleResponseOrigin(response) {
-        let inner = "";
-        response = response["data"];
-        console.log(response);
-        if (response.length !== 0 && $("#dep-from").val() !== "") {
-          removeElementsOrigin();
-          for (let airportInfo of response) {
-            let listItem = document.createElement("li");
-            listItem.classList.add("list-items-origin", "list-group-item", "rounded-0");
-            curString = airportInfo.toString();
-            listItem.setAttribute(
-              "onclick",
-              "displayOrigin('" + airportInfo[0] + "')"
-            );
-
-            listItem.innerHTML = curString;
-            document.querySelector("#origin_list").appendChild(listItem);
-          }
-        }
+        listItem.innerHTML = curString;
+        document.querySelector("#origin_list").appendChild(listItem);
       }
-
-      function handleResponseDest(response) {
-        let inner = "";
-        response = response["data"];
-        console.log(response);
-        if (response.length !== 0 && $("#dep-to").val() !== "") {
-          removeElementsDest();
-          for (let airportInfo of response) {
-            let listItem = document.createElement("li");
-            listItem.classList.add("list-items-dest", "list-group-item", "rounded-0");
-            curString = airportInfo.toString();
-            listItem.setAttribute(
-              "onclick",
-              "displayDest('" + airportInfo[0] + "', '" + airportInfo[2] + "')"
-            );
-
-            listItem.innerHTML = curString;
-            document.querySelector("#destination_list").appendChild(listItem);
-          }
-        }
-      }
-
-      function displayOrigin(value) {
-        console.log(value);
-        $("#dep-from").val(value);
-        removeElementsOrigin();
-      }
-
-      function displayDest(value, country) {
-        console.log(value);
-        $("#dep-to").val(value);
-        $("#dest-country").val(country);
-        removeElementsDest();
-      }
-
-      function removeElementsOrigin() {
-        let items = document.querySelectorAll(".list-items-origin");
-        // console.log(items);
-        items.forEach((item) => {
-          console.log(item);
-          item.remove();
-        });
-      }
-
-      function removeElementsDest() {
-        let items = document.querySelectorAll(".list-items-dest");
-        // console.log(items);
-        items.forEach((item) => {
-          console.log(item);
-          item.remove();
-        });
-      }
-
-      function getOrigin() {
-        let city = $("#dep-from").val();
-        // console.log(city);
-        if (!city) {
-          // console.log("string is empty");
-          removeElementsOrigin();
-          return;
-        }
-        city = encodeURIComponent(city);
-        let url = "/flight/select_place/" + city;
-        if (request_origin != null) {
-          request_origin.abort();
-        }
-        request_origin = $.ajax({
-          type: "GET",
-          url: url,
-          success: handleResponseOrigin,
-        });
-      }
-
-      function getDest() {
-        let city = $("#dep-to").val();
-        console.log(city);
-        if (!city) {
-          removeElementsDest();
-          // console.log("string is empty");
-          return;
-        }
-        city = encodeURIComponent(city);
-        let url = "/flight/select_place/" + city;
-        if (request_dest != null) {
-          request_dest.abort();
-        }
-        request_dest = $.ajax({
-          type: "GET",
-          url: url,
-          success: handleResponseDest,
-        });
-      }
-
-      function setup() {
-        $("#dep-from").on("input", getOrigin);
-        $("#dep-to").on("input", getDest);
-        $("#one-way").on("click", () => toggleReturnBox("one-way"));
-        $("#return").on("click", () => toggleReturnBox("return")); 
-      }
-
-      
-      $("document").ready(setup);
-
-      function toggleReturnBox(btn) {
-        let box1 = $("#return-box");
-        console.log(box1);
-        console.log(btn);
-        // console.log("button checked", this.checked);
-        if (btn == "return") {
-          box1.css("visibility", "visible");
-        }
-        if (btn == "one-way") {
-          box1.css("visibility", "hidden");
-        }
-      }
-    </script>
-  </body>
-</html>
-<!-- <style>
-  ul {
-    list-style: none;
+    }
   }
-  .list {
-    width: 30%;
-    background-color: #ffffff;
-    border-radius: 0 0 5px 5px;
+
+  function handleResponseDest(response) {
+    let inner = "";
+    response = response["data"];
+    console.log(response);
+    if (response.length !== 0 && $("#dep-to").val() !== "") {
+      removeElementsDest();
+      for (let airportInfo of response) {
+        let listItem = document.createElement("li");
+        listItem.classList.add(
+          "list-items-dest",
+          "list-group-item",
+          "rounded-0"
+        );
+        curString = airportInfo.toString();
+        listItem.setAttribute(
+          "onclick",
+          "displayDest('" + airportInfo[0] + "', '" + airportInfo[2] + "')"
+        );
+
+        listItem.innerHTML = curString;
+        document.querySelector("#destination_list").appendChild(listItem);
+      }
+    }
   }
-  .list-items {
-    padding: 10px 5px;
+
+  function displayOrigin(value) {
+    console.log(value);
+    $("#dep-from").val(value);
+    removeElementsOrigin();
   }
-  .list-items:hover {
-    background-color: #dddddd;
+
+  function displayDest(value, country) {
+    console.log(value);
+    $("#dep-to").val(value);
+    $("#dest-country").val(country);
+    removeElementsDest();
   }
-  /* form {
-    width: 75vmin;
-    position: absolute;
-    padding: 40px 0;
+
+  function removeElementsOrigin() {
+    let items = document.querySelectorAll(".list-items-origin");
+    // console.log(items);
+    items.forEach((item) => {
+      console.log(item);
+      item.remove();
+    });
   }
-  input[type="text"] {
-    width: 30%;
-    padding: 15px 10px;
-    border: none;
-    border-bottom: 1px solid #645979;
-    outline: none;
-    border-radius: 5px 5px 0 0;
-    background-color: #ffffff;
-    font-size: 16px;
-  } */
-</style> -->
+
+  function removeElementsDest() {
+    let items = document.querySelectorAll(".list-items-dest");
+    // console.log(items);
+    items.forEach((item) => {
+      console.log(item);
+      item.remove();
+    });
+  }
+
+  function getOrigin() {
+    let city = $("#dep-from").val();
+    // console.log(city);
+    if (!city) {
+      // console.log("string is empty");
+      removeElementsOrigin();
+      return;
+    }
+    city = encodeURIComponent(city);
+    let url = "/flight/select_place/" + city;
+    if (request_origin != null) {
+      request_origin.abort();
+    }
+    request_origin = $.ajax({
+      type: "GET",
+      url: url,
+      success: handleResponseOrigin,
+    });
+  }
+
+  function getDest() {
+    let city = $("#dep-to").val();
+    console.log(city);
+    if (!city) {
+      removeElementsDest();
+      // console.log("string is empty");
+      return;
+    }
+    city = encodeURIComponent(city);
+    let url = "/flight/select_place/" + city;
+    if (request_dest != null) {
+      request_dest.abort();
+    }
+    request_dest = $.ajax({
+      type: "GET",
+      url: url,
+      success: handleResponseDest,
+    });
+  }
+
+  function setup() {
+    $("#dep-from").on("input", getOrigin);
+    $("#dep-to").on("input", getDest);
+    $("#one-way").on("click", () => toggleReturnBox("one-way"));
+    $("#return").on("click", () => toggleReturnBox("return"));
+  }
+
+  $("document").ready(setup);
+
+  function toggleReturnBox(btn) {
+    let box1 = $("#return-box");
+    console.log(box1);
+    console.log(btn);
+    // console.log("button checked", this.checked);
+    if (btn == "return") {
+      box1.css("visibility", "visible");
+    }
+    if (btn == "one-way") {
+      box1.css("visibility", "hidden");
+    }
+  }
+</script>
+{% endblock %}

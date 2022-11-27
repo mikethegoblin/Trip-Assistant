@@ -3,6 +3,7 @@ Handles the view for trip destination recommendation
 """
 from helper.helper_recommend import get_locations, get_recommendation
 from flask import Blueprint, redirect, render_template, request, session
+from models import  User
 import requests
 API_KEY = "AIzaSyBLKr0D_aN8HKMauIPvtUyprO-RXGxpAtw"
 API_url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?"
@@ -16,14 +17,22 @@ def get_recommend_page():
     """
     Render the city recommendation page
     """
+    username = session.get("username")
+    user = None
+    if username:
+        user = User.query.filter_by(username=username).first()
     locations = get_locations()
-    return render_template("recommend.html", result=False, locations=locations)
+    return render_template("recommend.html", result=False, locations=locations, user = user)
 
 @recommend_blueprint.route("/recommend/result", methods=["GET"])
 def get_recommend_result():
     """ 
     Render the result of the recommendation
     """
+    username = session.get("username")
+    user = None
+    if username:
+        user = User.query.filter_by(username=username).first()
     # get form input
     city = request.args.get("location-origin")
     # print(city)
@@ -35,6 +44,7 @@ def get_recommend_result():
 
 
     recommended_city, country, response, table_html, locations = get_recommendation(city, [level1, level2, level3, level4, level5])
+    print(table_html)
     params = {
         "key": API_KEY,
         "inputtype": "textquery",
@@ -50,6 +60,7 @@ def get_recommend_result():
         }
     city_picture = requests.get(API_url2, params=params).url
     return render_template("recommend.html",
+                            user = user,
                             city_picture = city_picture,
                             result=True,
                             locations=locations,
