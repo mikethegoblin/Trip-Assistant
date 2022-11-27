@@ -2,7 +2,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #a9cbee;
+  
 }
 input[type="range"] {
   -webkit-appearance: none;
