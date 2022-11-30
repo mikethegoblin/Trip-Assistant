@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <link rel="stylesheet" href="/static/css/ticket_search.css" />
-<link rel="stylesheet" href="/static/recommend.css" />
+<link rel="stylesheet" href="/static/css/recommend.css" />
 <link rel="stylesheet" href="/static/css/flight.css" />
   <link rel="icon" type="image/ico" href="../static/img/favicon.ico" />
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"></script>
@@ -69,7 +69,7 @@
                       <output>{{nightlife_score or 1}}</output>
                     </div>
                   </div>
-                  <input type="submit" id="get-city" value="Recommend" />
+                  <input type="submit" class="btn btn-primary rounded-5" id="get-city" value="Recommend" />
                 </form>
               </div>
     </div>
@@ -81,7 +81,7 @@
       <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
       <div class="card-body">
         <div class="recommend-result">
-          <h5>Recommendation</h5>
+          <h5><b>Recommendation</b></h5>
           <p>
             Based on your aggregate preferences and ratings, <b>{{final_city}}</b> is the top recommended city to
             move/travel
