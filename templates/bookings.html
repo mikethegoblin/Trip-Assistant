@@ -108,7 +108,11 @@
             {% endif %} {% if ticket.status == 'PENDING' %}
             <form action="/flight/resumebooking" method="POST">
               <input type="hidden" name="ref" value="{{ticket.ref_no}}" />
-              <button type="submit" class="btn btn-outline-primary btnp rbtn">
+              <button
+                type="submit"
+                class="btn btn-outline-primary btnp rbtn"
+                hidden
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
