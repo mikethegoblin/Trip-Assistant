@@ -1,6 +1,6 @@
 {% extends 'layout2.html' %} {% block head %}
 <title>Flight Payment</title>
-<link rel="icon" type = "image/x-icon" href = "../static/img/favicon.ico">
+<link rel="icon" type="image/x-icon" href="../static/img/favicon.ico" />
 <link rel="stylesheet" href="/static/css/payment_style.css" />
 {% endblock %} {% block body %}
 <section class="section section1">
@@ -29,7 +29,7 @@
                 class="form-control"
                 id="payment_amount"
                 name="fare"
-                value="$ {{fare}}"
+                value="$ {{'%.2f'|format(fare)}}"
                 disabled
                 required
               />
