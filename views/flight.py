@@ -114,7 +114,7 @@ def search_flight():
         departdate = request.args.get("DepartDate")
         depart_date = datetime.strptime(departdate, "%Y-%m-%d")
         return_date = None
-        seat = request.args.get('SeatClass')
+        seat = request.args.get('SeatClass', 'economy')
     if request.method == "POST":
         o_place = request.form.get("Origin")
         d_place = request.form.get("Destination")
@@ -242,7 +242,6 @@ def review():
     # if request.user.is_authenticated:
     flight1 = Flight.query.filter_by(id=flight_1).first()
     flight1ddate = datetime(int(date1.split('-')[2]),int(date1.split('-')[1]),int(date1.split('-')[0]),flight1.depart_time.hour,flight1.depart_time.minute)
-    print(flight1.duration)
     flight1adate = (flight1ddate + timedelta(microseconds=flight1.duration))
     flight2 = None
     flight2ddate = None
