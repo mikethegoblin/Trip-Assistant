@@ -42,6 +42,9 @@ def flight():
     user = None
     if username:
         user = User.query.filter_by(username=username).first()
+    args = request.args
+    if args:
+        return render_template('flight.html', user = user,args = args)
     return render_template('flight.html', user = user)
 
 @flight_blueprint.route("/flight/select_place/<param>", methods=["GET"])
@@ -275,6 +278,10 @@ def review():
 
 @flight_blueprint.route("/flight/payment", methods=["POST"])
 def payment():
+    username = session.get("username")
+    user = None
+    if username:
+        user = User.query.filter_by(username=username).first()
         #if request.user.is_authenticated:
     print(request.form)
     ticket_id = request.form['ticket']
@@ -300,11 +307,12 @@ def payment():
         db.session.commit()
         return render_template('payment_process.html', 
             ticket1=ticket,
-            ticket2=ticket2
+            ticket2=ticket2,
+            user = user
         )
     return render_template('payment_process.html', 
         ticket1=ticket,
-        ticket2=""
+        ticket2="",user = user
     )
     #         except Exception as e:
     #             return HttpResponse(e)
