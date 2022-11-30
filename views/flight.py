@@ -21,13 +21,7 @@ flight_blueprint = Blueprint(
 
 FEE = 100.0
 
-API_KEY="RRU3luwDGuknU0Sy16iUXX52G7qCeDnU"
-API_SECRET="ASSQQlF8qWj5Vt3F"
 
-amadeus = Client(
-    client_id=API_KEY,
-    client_secret=API_SECRET
-)
 
 @flight_blueprint.route('/logout')
 def log_out():
@@ -60,47 +54,13 @@ def select_destination(param):
         for place in places:
             if (q in place.city.lower()) or (q in place.airport.lower()) or (q in place.code.lower()) or (q in place.country.lower()):
                 filters.append([place.code, place.city, place.country])
-        # response, _ = get_airport_info({"keyword": param, "subType": "AIRPORT"})
-        # display at most five list
-        # address_information = response.get("data", [])[:5]
-        # locations = []
-        # for location_info in address_information:
-        #     locations.append([location_info.get("iataCode", ""), location_info["address"]["cityName"], location_info["address"]["countryName"]])
+        
         return make_response({"data":filters})
     except ResponseError as error:
         print(error)
     return {"error": "Invalid request method"}
 
-@flight_blueprint.route("/price_offers")
-def price_offer():
-    if request.method=="POST":
-        try: 
-            flight = request.POST['flight']
-            response=amadeus.shopping.flight_offers.pricing.post(flight)
-            return {"data":response.data}
-        except ResponseError as error:
-            print(error)
-    else:
-        return {"error":"Invalid request method"}
-
-@flight_blueprint.route("/trip_purpose_prediction", methods = ["GET"])
-def predict_trip():
-    """
-    If a traveler has shown interest in Berlin, what other destinations would he/she like?
-    """
-    kwargs = {'originLocationCode': request.args.get('Origin'),
-            'destinationLocationCode': request.args.get('Destination'),
-            'departureDate': request.args.get('Departuredate'),
-            'returnDate': request.args.get('Returndate')}
-    
-    try:
-        purpose = amadeus.travel.predictions.trip_purpose.get(
-            **kwargs).data['result']
-
-    except ResponseError as error:
-        print(error)
-        return render_template(request, 'home.html', {})
-    return render_template(request, 'home.html', {'res': purpose})
+ 
 
 
 @flight_blueprint.route("/flight/search", methods=["GET", "POST"])
@@ -314,24 +274,7 @@ def payment():
         ticket1=ticket,
         ticket2="",user = user
     )
-    #         except Exception as e:
-    #             return HttpResponse(e)
-    #     else:
-    #         return HttpResponse("Method must be post.")
-    # else:
-    #     return HttpResponseRedirect(reverse('login'))
-
-
-# @flight_blueprint.route("flight/bookings")
-# def bookings():
-# #if request.user.is_authenticated:
-#     tickets = Ticket.objects.filter(user=request.user).order_by('-booking_date')
-#     return render_template(request, 'bookings.html', 
-#         page=bookings,
-#         tickets=tickets
-#     )
-# else:
-#     return HttpResponseRedirect(reverse('login'))
+    
 
 @flight_blueprint.route("/ticket/cancel", methods=["POST"])
 def cancel_ticket():
@@ -355,48 +298,7 @@ def cancel_ticket():
             }
         )
         
-# @csrf_exempt
-# def cancel_ticket(request):
-#     if request.method == 'POST':
-#         if request.user.is_authenticated:
-#             ref = request.POST['ref']
-#             try:
-#                 ticket = Ticket.objects.get(ref_no=ref)
-#                 if ticket.user == request.user:
-#                     ticket.status = 'CANCELLED'
-#                     ticket.save()
-#                     return JsonResponse({'success': True})
-#                 else:
-#                     return JsonResponse({
-#                         'success': False,
-#                         'error': "User unauthorised"
-#                     })
-#             except Exception as e:
-#                 return JsonResponse({
-#                     'success': False,
-#                     'error': e
-#                 })
-#         else:
-#             return HttpResponse("User unauthorised")
-#     else:
-#         return HttpResponse("Method must be POST.")
 
-# def resume_booking(request):
-#     if request.method == 'POST':
-#         if request.user.is_authenticated:
-#             ref = request.POST['ref']
-#             ticket = Ticket.objects.get(ref_no=ref)
-#             if ticket.user == request.user:
-#                 return render(request, "flight/payment.html", {
-#                     'fare': ticket.total_fare,
-#                     'ticket': ticket.id
-#                 })
-#             else:
-#                 return HttpResponse("User unauthorised")
-#         else:
-#             return HttpResponseRedirect(reverse("login"))
-#     else:
-#         return HttpResponse("Method must be post.")
 
 @flight_blueprint.route("/flight/ticket/book", methods=["POST"])
 def book():
