@@ -82,6 +82,8 @@
             <!--<button class="btn btn-outline-primary btnp">Print Ticket</button>-->
             <form action="/flight/addevent" method="get" target="_blank">
               <input type="hidden" name="ref" value="{{ticket.ref_no}}" />
+              <input type="hidden" name="departure-time" value="{{ticket.flight_ddate}}" />
+              <input type="hidden" name="arrival-time" value="{{ticket.flight_adate}}" />
               <button
                 type="submit"
                 class="btn btn-outline-info btnp pbtn"
