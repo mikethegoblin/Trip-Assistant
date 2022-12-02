@@ -21,7 +21,7 @@ print(client_secrets_file)
 flow = Flow.from_client_secrets_file(  #Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
     client_secrets_file=client_secrets_file,
     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],  #here we are specifing what do we get after the authorization
-    redirect_uri="http://127.0.0.1:5111/callback"  #and the redirect URI is the point where the user will end up after the authorization
+    redirect_uri="https://zgu-cpsc519.herokuapp.com/callback"  #and the redirect URI is the point where the user will end up after the authorization
 )
 
 login_blueprint = Blueprint(
