@@ -40,11 +40,11 @@ def login_is_required(function):  #a function to check if the user is authorized
 @login_blueprint.route("/callback")  #this is the page that will handle the callback process meaning process after the authorization
 def callback():
     flow.fetch_token(authorization_response=request.url)
-    print(request.url)
-    print(session["state"] == request.args["state"])
-    print(request.args)
-    print(session["state"], "hi I am session state")
-    print(request.args['state'], "hi i am requets")
+    # print(request.url)
+    # print(session["state"] == request.args["state"])
+    # print(request.args)
+    # print(session["state"], "hi I am session state")
+    # print(request.args['state'], "hi i am requets")
     if not session["state"] == request.args["state"]:
         abort(500)  #state does not match!
 
@@ -57,6 +57,8 @@ def callback():
         id_token=credentials._id_token,
         request=token_request
     )
+    print("id_info", id_info)
+    user_email = id_info.get("email")
     session["username"] = id_info.get("sub")  #defing the results to show on the page
     session["name"] = id_info.get("name")
     session["first_name"] = id_info.get("given_name")
@@ -65,7 +67,8 @@ def callback():
         helper_database.add_google_user(
                     session["username"],
                     session["first_name"],
-                    session["last_name"]
+                    session["last_name"],
+                    user_email
                 )
     return redirect("/flight") 
 
