@@ -479,7 +479,7 @@ def add_to_calendar():
     event = {
     'summary': 'Flight Information',
     'location': 'Airport',
-    'description': 'A chance to hear more about Google\'s developer products.',
+    'description': 'Your flight info via trip assistant app',
     'start': {
         'dateTime': dd1.isoformat(),
         'timeZone': 'US/Eastern',
