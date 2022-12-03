@@ -26,7 +26,7 @@ flight_blueprint = Blueprint(
 
 FEE = 100.0
 flow = InstalledAppFlow.from_client_secrets_file(client_secrets_file=client_secrets_file, scopes=["https://www.googleapis.com/auth/calendar"],
-redirect_uri = "http://127.0.0.1:5111/callback2")
+redirect_uri = "https://zgu-cpsc519.herokuapp.com/callback2")
 
 @flight_blueprint.route('/logout')
 def log_out():
