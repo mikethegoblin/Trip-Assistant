@@ -24,7 +24,7 @@ flight_blueprint = Blueprint(
     "flight", __name__, static_folder="static", template_folder="templates"
 )
 
-FEE = 100.0
+FEE = 20.0
 flow = InstalledAppFlow.from_client_secrets_file(client_secrets_file=client_secrets_file, scopes=["https://www.googleapis.com/auth/calendar"],
 redirect_uri = "http://127.0.0.1:5111/callback2")
 
