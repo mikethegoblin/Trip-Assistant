@@ -195,9 +195,7 @@ def review():
     if username:
         user = User.query.filter_by(username=username).first()
     flight_1 = request.args.get("flight1Id")
-    print("flight id " , flight_1)
     date1 = request.args.get("flight1Date")
-    print(date1)
     seat = request.args.get("seatClass")
     round_trip = False
     if request.args.get("flight2Id"):
@@ -250,7 +248,6 @@ def payment():
     if username:
         user = User.query.filter_by(username=username).first()
         #if request.user.is_authenticated:
-    print(request.form)
     ticket_id = request.form['ticket']
     t2 = False
     if request.form.get('ticket2'):
@@ -309,7 +306,6 @@ def cancel_ticket():
 
 @flight_blueprint.route("/flight/ticket/book", methods=["POST"])
 def book():
-    print(session)
     #if request.user.is_authenticated:
     username = session["username"]
     user = User.query.filter_by(username=username).first()
@@ -360,7 +356,6 @@ def book():
             fare = flight1.first_fare*int(passengerscount)
     
 
-    print("hihhiihihihi", ticket1)
     if f2:    ##
         return render_template("payment.html",  ##
             user = user,
@@ -418,7 +413,6 @@ def createticket(user,passengers,passengerscount,flight1,flight_1date,flight_1cl
 def get_ticket():
     ref = request.args.get("ref")
     ticket1 = Ticket.query.filter_by(ref_no=ref).first()
-    print(ticket1, '"fdsafgddsaggadsfafs')
     data = {
         'ticket1':ticket1,
         'current_year': datetime.now().year
@@ -460,8 +454,6 @@ def add_event():
 
 @flight_blueprint.route("/callback2")
 def add_to_calendar():
-    print(request.url)
-    print(session["dd1"], session["dd2"])
     flow.fetch_token(authorization_response=request.url)
     creds = flow.credentials
     service = build('calendar', 'v3', credentials=creds)
@@ -472,7 +464,6 @@ def add_to_calendar():
     dd2 = session["dd2"]
     dd2 = datetime.strptime(dd2, '%Y-%m-%d %H:%M:%S')
     dd2 = dd2.astimezone(tz1) 
-    print(dd1.isoformat(), dd2.isoformat())
     session.pop("dd1")
     session.pop("dd2")
 
