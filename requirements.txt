@@ -12,9 +12,14 @@ Flask==2.2.2
 Flask-Limiter==2.1
 Flask-Migrate==3.1.0
 Flask-SQLAlchemy==3.0.2
-google-auth==1.27.0
+google-api-core==2.11.0
+google-api-python-client==2.68.0
+google-auth==2.15.0
+google-auth-httplib2==0.1.0
 google-auth-oauthlib==0.4.2
+googleapis-common-protos==1.57.0
 gunicorn==20.1.0
+httplib2==0.21.0
 idna==3.4
 itsdangerous==2.1.2
 Jinja2==3.1.2
@@ -29,6 +34,7 @@ oauthlib==3.2.2
 packaging==21.3
 pandas==1.5.1
 pathlib==1.0.1
+protobuf==4.21.10
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pyparsing==3.0.9
@@ -45,6 +51,7 @@ sklearn==0.0
 SQLAlchemy==1.4.42
 threadpoolctl==3.1.0
 typing_extensions==4.4.0
+uritemplate==4.1.1
 urllib3==1.26.12
 vendor==0.1
 Werkzeug==2.2.2
