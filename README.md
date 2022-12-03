@@ -18,7 +18,7 @@ This is an application that allow users to browse flight ticket options and book
 - add booked tickets as an event to google calendar
 
 ### Tech Stack
-**Backend**: Flask with Jinja templated rendering engine  
+**Backend**: Flask with Jinja template rendering engine  
 **Frontend**: HTML, CSS, Javascript  
 **Deployment**: Heroku
 
