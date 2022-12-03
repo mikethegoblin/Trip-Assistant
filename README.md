@@ -45,7 +45,7 @@ Here are some examples that work:
 ### How To Run It Locally
 - switch to `dev` branch (main is the deployment branch, the setup is a little different) 
 - Install Python 3.10
-- Install all required dependencies by running `pip install requirement.txt`
+- Install all required dependencies by running `pip install requirements.txt`
 - run `python app.py`
 
 
