@@ -14,6 +14,62 @@
     
 
       <section class="section section1">
+        <div class="animate pop">
+        <div class="wrapper">
+          {% if result %}
+          <div class="wrapper">
+            <div class="card">
+              <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
+              <div class="card-body">
+                <div class="recommend-result">
+                  <h5><b>Recommendation</b></h5>
+                  <p>
+                    
+                    <h2>
+                      <div id="test"><p><span class="multicolortext">{{final_city}}</span></p></div>
+                    </h2>is the top recommended city 
+                    to move/travel to, based on your preferences and ratings.
+                  </p>
+                  <h5>About {{final_city}} :</h5>
+                  <p>
+                    {{final_city}} is a city in {{country}}. <br>
+                    {{response}}
+                  </p>
+                  <div class="row">
+                  <div class = "column">
+                    <style>
+                      table {text-align: center;}
+                      table thead th {text-align: center;}
+                      table, th, td {
+          border: 1px solid white;
+          border-collapse: collapse;
+        }
+        th, td {
+          background-color: #dca8e1;
+        }
+                      </style>
+                      <div class="animate glow delay-2">
+                    <div class="table">
+                      {{dataframe|safe}}
+                    </div>
+                  </div>
+                  </div>
+                  <div class = "column">
+                    <div class="animate glow delay-3">
+                    <img src={{city_picture}} width="430" height="300">
+                    </div>
+                  </div>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        
+              
+        
+            </div>
+          </div>
         <div class="wrapper bg-white border rounded" id="form-container">
             <div class="recommend-input-form">
                 <h1 style="padding: 30px 50px 0px 50px;">
@@ -74,53 +130,6 @@
               </div>
     </div>
 
-    <div class="wrapper">
-  {% if result %}
-  <div class="wrapper">
-    <div class="card">
-      <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
-      <div class="card-body">
-        <div class="recommend-result">
-          <h5><b>Recommendation</b></h5>
-          <p>
-            Based on your aggregate preferences and ratings, <b>{{final_city}}</b> is the top recommended city to
-            move/travel
-            to.
-          </p>
-          <h5>About {{final_city}}</h5>
-          <p>
-            {{final_city}} is a city in {{country}}. <br>
-            {{response}}
-          </p>
-          <div class="row">
-          <div class = "column">
-            <style>
-              table {text-align: center;}
-              table thead th {text-align: center;}
-              table, th, td {
-  border: 1px solid white;
-  border-collapse: collapse;
-}
-th, td {
-  background-color: #dca8e1;
-}
-              </style>
-            <div class="table">
-              {{dataframe|safe}}
-            </div>
-          </div>
-          <div class = "column">
-            <img src={{city_picture}} width="430" height="300">
-          </div>
-        </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  {% endif %}
-
-      
-
-    </div>
+  
     </section>
 {% endblock %}
