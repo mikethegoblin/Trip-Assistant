@@ -43,8 +43,7 @@ def get_recommend_result():
     level5 = request.args.get("nightlife-score")
 
 
-    recommended_city, country, response, table_html, locations = get_recommendation(city, [level1, level2, level3, level4, level5])
-    print(table_html)
+    recommended_city, country, response, table_html, locations = get_recommendation(city, [level1, level2, level3, level4, level5]) 
     params = {
         "key": API_KEY,
         "inputtype": "textquery",

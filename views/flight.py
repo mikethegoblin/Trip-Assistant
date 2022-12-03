@@ -6,28 +6,27 @@ import math
 import secrets
 from datetime import datetime, timedelta
 
+import pytz
 from amadeus import Client, Location, ResponseError
 from database import db
 from flask import (Blueprint, make_response, redirect, render_template,
                    request, session)
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
 from helper.helper_api import *
 from helper.helper_flight import convert_flight_info, parse_class
 from models import (Flight, Passenger, Place, Ticket, TicketPassenger, User,
                     Week)
+
+from views.login import client_secrets_file
 
 flight_blueprint = Blueprint(
     "flight", __name__, static_folder="static", template_folder="templates"
 )
 
 FEE = 100.0
-
-API_KEY="RRU3luwDGuknU0Sy16iUXX52G7qCeDnU"
-API_SECRET="ASSQQlF8qWj5Vt3F"
-
-amadeus = Client(
-    client_id=API_KEY,
-    client_secret=API_SECRET
-)
+flow = InstalledAppFlow.from_client_secrets_file(client_secrets_file=client_secrets_file, scopes=["https://www.googleapis.com/auth/calendar"],
+redirect_uri = "http://127.0.0.1:5111/callback2")
 
 @flight_blueprint.route('/logout')
 def log_out():
@@ -42,6 +41,9 @@ def flight():
     user = None
     if username:
         user = User.query.filter_by(username=username).first()
+    args = request.args
+    if args:
+        return render_template('flight.html', user = user,args = args)
     return render_template('flight.html', user = user)
 
 @flight_blueprint.route("/flight/select_place/<param>", methods=["GET"])
@@ -57,47 +59,13 @@ def select_destination(param):
         for place in places:
             if (q in place.city.lower()) or (q in place.airport.lower()) or (q in place.code.lower()) or (q in place.country.lower()):
                 filters.append([place.code, place.city, place.country])
-        # response, _ = get_airport_info({"keyword": param, "subType": "AIRPORT"})
-        # display at most five list
-        # address_information = response.get("data", [])[:5]
-        # locations = []
-        # for location_info in address_information:
-        #     locations.append([location_info.get("iataCode", ""), location_info["address"]["cityName"], location_info["address"]["countryName"]])
+        
         return make_response({"data":filters})
     except ResponseError as error:
         print(error)
     return {"error": "Invalid request method"}
 
-@flight_blueprint.route("/price_offers")
-def price_offer():
-    if request.method=="POST":
-        try: 
-            flight = request.POST['flight']
-            response=amadeus.shopping.flight_offers.pricing.post(flight)
-            return {"data":response.data}
-        except ResponseError as error:
-            print(error)
-    else:
-        return {"error":"Invalid request method"}
-
-@flight_blueprint.route("/trip_purpose_prediction", methods = ["GET"])
-def predict_trip():
-    """
-    If a traveler has shown interest in Berlin, what other destinations would he/she like?
-    """
-    kwargs = {'originLocationCode': request.args.get('Origin'),
-            'destinationLocationCode': request.args.get('Destination'),
-            'departureDate': request.args.get('Departuredate'),
-            'returnDate': request.args.get('Returndate')}
-    
-    try:
-        purpose = amadeus.travel.predictions.trip_purpose.get(
-            **kwargs).data['result']
-
-    except ResponseError as error:
-        print(error)
-        return render_template(request, 'home.html', {})
-    return render_template(request, 'home.html', {'res': purpose})
+ 
 
 
 @flight_blueprint.route("/flight/search", methods=["GET", "POST"])
@@ -114,7 +82,7 @@ def search_flight():
         departdate = request.args.get("DepartDate")
         depart_date = datetime.strptime(departdate, "%Y-%m-%d")
         return_date = None
-        seat = request.args.get('SeatClass')
+        seat = request.args.get('SeatClass', 'economy')
     if request.method == "POST":
         o_place = request.form.get("Origin")
         d_place = request.form.get("Destination")
@@ -227,9 +195,7 @@ def review():
     if username:
         user = User.query.filter_by(username=username).first()
     flight_1 = request.args.get("flight1Id")
-    print("flight id " , flight_1)
     date1 = request.args.get("flight1Date")
-    print(date1)
     seat = request.args.get("seatClass")
     round_trip = False
     if request.args.get("flight2Id"):
@@ -242,7 +208,7 @@ def review():
     # if request.user.is_authenticated:
     flight1 = Flight.query.filter_by(id=flight_1).first()
     flight1ddate = datetime(int(date1.split('-')[2]),int(date1.split('-')[1]),int(date1.split('-')[0]),flight1.depart_time.hour,flight1.depart_time.minute)
-    print(flight1.duration)
+    flight1adate = datetime(int(date1.split('-')[2]),int(date1.split('-')[1]),int(date1.split('-')[0]),flight1.arrival_time.hour,flight1.arrival_time.minute)
     flight1adate = (flight1ddate + timedelta(microseconds=flight1.duration))
     flight2 = None
     flight2ddate = None
@@ -250,7 +216,8 @@ def review():
     if round_trip:
         flight2 = Flight.query.filter_by(id=flight_2).first()
         flight2ddate = datetime(int(date2.split('-')[2]),int(date2.split('-')[1]),int(date2.split('-')[0]),flight2.depart_time.hour,flight2.depart_time.minute)
-        flight2adate = (flight2ddate + timedelta(microseconds=flight2.duration))
+        flight1adate = datetime(int(date1.split('-')[2]),int(date1.split('-')[1]),int(date1.split('-')[0]),flight1.arrival_time.hour,flight1.arrival_time.minute)
+        # flight2adate = (flight2ddate + timedelta(microseconds=flight2.duration))
     if round_trip:
         return render_template("book.html", 
             user = user,
@@ -276,8 +243,11 @@ def review():
 
 @flight_blueprint.route("/flight/payment", methods=["POST"])
 def payment():
+    username = session.get("username")
+    user = None
+    if username:
+        user = User.query.filter_by(username=username).first()
         #if request.user.is_authenticated:
-    print(request.form)
     ticket_id = request.form['ticket']
     t2 = False
     if request.form.get('ticket2'):
@@ -301,30 +271,14 @@ def payment():
         db.session.commit()
         return render_template('payment_process.html', 
             ticket1=ticket,
-            ticket2=ticket2
+            ticket2=ticket2,
+            user = user
         )
     return render_template('payment_process.html', 
         ticket1=ticket,
-        ticket2=""
+        ticket2="",user = user
     )
-    #         except Exception as e:
-    #             return HttpResponse(e)
-    #     else:
-    #         return HttpResponse("Method must be post.")
-    # else:
-    #     return HttpResponseRedirect(reverse('login'))
-
-
-# @flight_blueprint.route("flight/bookings")
-# def bookings():
-# #if request.user.is_authenticated:
-#     tickets = Ticket.objects.filter(user=request.user).order_by('-booking_date')
-#     return render_template(request, 'bookings.html', 
-#         page=bookings,
-#         tickets=tickets
-#     )
-# else:
-#     return HttpResponseRedirect(reverse('login'))
+    
 
 @flight_blueprint.route("/ticket/cancel", methods=["POST"])
 def cancel_ticket():
@@ -348,52 +302,10 @@ def cancel_ticket():
             }
         )
         
-# @csrf_exempt
-# def cancel_ticket(request):
-#     if request.method == 'POST':
-#         if request.user.is_authenticated:
-#             ref = request.POST['ref']
-#             try:
-#                 ticket = Ticket.objects.get(ref_no=ref)
-#                 if ticket.user == request.user:
-#                     ticket.status = 'CANCELLED'
-#                     ticket.save()
-#                     return JsonResponse({'success': True})
-#                 else:
-#                     return JsonResponse({
-#                         'success': False,
-#                         'error': "User unauthorised"
-#                     })
-#             except Exception as e:
-#                 return JsonResponse({
-#                     'success': False,
-#                     'error': e
-#                 })
-#         else:
-#             return HttpResponse("User unauthorised")
-#     else:
-#         return HttpResponse("Method must be POST.")
 
-# def resume_booking(request):
-#     if request.method == 'POST':
-#         if request.user.is_authenticated:
-#             ref = request.POST['ref']
-#             ticket = Ticket.objects.get(ref_no=ref)
-#             if ticket.user == request.user:
-#                 return render(request, "flight/payment.html", {
-#                     'fare': ticket.total_fare,
-#                     'ticket': ticket.id
-#                 })
-#             else:
-#                 return HttpResponse("User unauthorised")
-#         else:
-#             return HttpResponseRedirect(reverse("login"))
-#     else:
-#         return HttpResponse("Method must be post.")
 
 @flight_blueprint.route("/flight/ticket/book", methods=["POST"])
 def book():
-    print(session)
     #if request.user.is_authenticated:
     username = session["username"]
     user = User.query.filter_by(username=username).first()
@@ -444,7 +356,6 @@ def book():
             fare = flight1.first_fare*int(passengerscount)
     
 
-    print("hihhiihihihi", ticket1)
     if f2:    ##
         return render_template("payment.html",  ##
             user = user,
@@ -463,11 +374,9 @@ def book():
     #     return HttpResponse("Method must be form.")
 
 def createticket(user,passengers,passengerscount,flight1,flight_1date,flight_1class,coupon,countrycode,email,mobile):
-    ###################
+    print(flight1, "hi create ticket")
     flight1ddate = datetime(int(flight_1date.split('-')[2]),int(flight_1date.split('-')[1]),int(flight_1date.split('-')[0]),flight1.depart_time.hour,flight1.depart_time.minute)
-    print("hildshaglsadhlgds", flight1ddate)
-    flight1adate = (flight1ddate + timedelta(microseconds=flight1.duration))
-    print(flight1adate)
+    flight1adate = flight1ddate + timedelta(microseconds=flight1.duration)
     ###################
     ffre = 0.0
     if flight_1class.lower() == 'first':
@@ -487,7 +396,7 @@ def createticket(user,passengers,passengerscount,flight1,flight_1date,flight_1cl
         passengers=passengers,
         flight=flight1,
         flight_ddate=flight1ddate,
-        flight_adate=datetime(flight1adate.year,flight1adate.month,flight1adate.day),
+        flight_adate=flight1adate,
         flight_fare=flight_fare,
         other_charges=FEE,
         total_fare = ffre+FEE+0.0,
@@ -504,7 +413,6 @@ def createticket(user,passengers,passengerscount,flight1,flight_1date,flight_1cl
 def get_ticket():
     ref = request.args.get("ref")
     ticket1 = Ticket.query.filter_by(ref_no=ref).first()
-    print(ticket1, '"fdsafgddsaggadsfafs')
     data = {
         'ticket1':ticket1,
         'current_year': datetime.now().year
@@ -535,3 +443,57 @@ def list_bookings():
         )
     # else:
     #     return HttpResponseRedirect(reverse('login'))
+@flight_blueprint.route("/flight/addevent")
+def add_event():
+    authorization_url, state = flow.authorization_url()  #asking the flow class for the authorization (login) url
+    departure_date = request.args.get("departure-time")
+    arrival_date = request.args.get("arrival-time")
+    session["dd1"] = departure_date
+    session["dd2"] = arrival_date
+    return redirect(authorization_url)
+
+@flight_blueprint.route("/callback2")
+def add_to_calendar():
+    flow.fetch_token(authorization_response=request.url)
+    creds = flow.credentials
+    service = build('calendar', 'v3', credentials=creds)
+    dd1 = session["dd1"]
+    dd1 = datetime.strptime(dd1, '%Y-%m-%d %H:%M:%S')
+    tz1 = pytz.timezone("US/Eastern")
+    dd1 = dd1.astimezone(tz1)
+    dd2 = session["dd2"]
+    dd2 = datetime.strptime(dd2, '%Y-%m-%d %H:%M:%S')
+    dd2 = dd2.astimezone(tz1) 
+    session.pop("dd1")
+    session.pop("dd2")
+
+    event = {
+    'summary': 'Flight Information',
+    'location': 'Airport',
+    'description': 'Your flight info via trip assistant app',
+    'start': {
+        'dateTime': dd1.isoformat(),
+        'timeZone': 'US/Eastern',
+        },
+    'end': {
+        'dateTime': dd2.isoformat(),
+        'timeZone': 'US/Eastern',
+        },
+    'recurrence': [
+        'RRULE:FREQ=DAILY;COUNT=1'
+        ],
+    'attendees': [
+        # {'email': 'lpage@example.com'},
+        # {'email': 'sbrin@example.com'},
+        ],
+    'reminders': {
+        'useDefault': False,
+        'overrides': [
+        {'method': 'email', 'minutes': 24 * 60},
+        {'method': 'popup', 'minutes': 10},
+        ],
+        },
+    }
+    event = service.events().insert(calendarId='primary', body=event).execute()
+    
+    return redirect("/bookings")

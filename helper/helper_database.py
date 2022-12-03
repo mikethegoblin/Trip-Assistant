@@ -9,7 +9,8 @@ def create_user(
     username:str,
     hashed_pwd: str,
     first_name: str,
-    last_name: str
+    last_name: str,
+    email=None
 ):
     """
     Creates a user object
@@ -22,6 +23,7 @@ def create_user(
         password=hashed_pwd,
         first_name=first_name,
         last_name=last_name,
+        email=email
     )
 
     return user
@@ -45,7 +47,8 @@ def get_city_info(city):
 def add_google_user(
     username:str,
     first_name: str,
-    last_name: str
+    last_name: str,
+    email: str
 ):
     """
     Insert the user in the 'account' and 'profile' tables in the database
@@ -54,7 +57,7 @@ def add_google_user(
         first_name: The first name input by the user.
         last_name: The last name input by the user.
     """
-    user = create_user(username, "googlegoogle", first_name, last_name)
+    user = create_user(username, "googlegoogle", first_name, last_name, email)
     print(user)
     db.session.add(user)
     db.session.commit()

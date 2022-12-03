@@ -16,7 +16,6 @@ from pip._vendor import cachecontrol
 
 GOOGLE_CLIENT_ID = "223412764881-smapie5fi1imh0q1vr9rkldu7nfjrc3u.apps.googleusercontent.com"
 client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json") 
-print(client_secrets_file)
 
 flow = Flow.from_client_secrets_file(  #Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
     client_secrets_file=client_secrets_file,
@@ -40,11 +39,6 @@ def login_is_required(function):  #a function to check if the user is authorized
 @login_blueprint.route("/callback")  #this is the page that will handle the callback process meaning process after the authorization
 def callback():
     flow.fetch_token(authorization_response=request.url)
-    print(request.url)
-    print(session["state"] == request.args["state"])
-    print(request.args)
-    print(session["state"], "hi I am session state")
-    print(request.args['state'], "hi i am requets")
     if not session["state"] == request.args["state"]:
         abort(500)  #state does not match!
 
@@ -57,6 +51,8 @@ def callback():
         id_token=credentials._id_token,
         request=token_request
     )
+    print("id_info", id_info)
+    user_email = id_info.get("email")
     session["username"] = id_info.get("sub")  #defing the results to show on the page
     session["name"] = id_info.get("name")
     session["first_name"] = id_info.get("given_name")
@@ -65,7 +61,8 @@ def callback():
         helper_database.add_google_user(
                     session["username"],
                     session["first_name"],
-                    session["last_name"]
+                    session["last_name"],
+                    user_email
                 )
     return redirect("/flight") 
 
