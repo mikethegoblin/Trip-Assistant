@@ -208,7 +208,6 @@ def review():
     # if request.user.is_authenticated:
     flight1 = Flight.query.filter_by(id=flight_1).first()
     flight1ddate = datetime(int(date1.split('-')[2]),int(date1.split('-')[1]),int(date1.split('-')[0]),flight1.depart_time.hour,flight1.depart_time.minute)
-    flight1adate = datetime(int(date1.split('-')[2]),int(date1.split('-')[1]),int(date1.split('-')[0]),flight1.arrival_time.hour,flight1.arrival_time.minute)
     flight1adate = (flight1ddate + timedelta(microseconds=flight1.duration))
     flight2 = None
     flight2ddate = None
@@ -216,8 +215,7 @@ def review():
     if round_trip:
         flight2 = Flight.query.filter_by(id=flight_2).first()
         flight2ddate = datetime(int(date2.split('-')[2]),int(date2.split('-')[1]),int(date2.split('-')[0]),flight2.depart_time.hour,flight2.depart_time.minute)
-        flight1adate = datetime(int(date1.split('-')[2]),int(date1.split('-')[1]),int(date1.split('-')[0]),flight1.arrival_time.hour,flight1.arrival_time.minute)
-        # flight2adate = (flight2ddate + timedelta(microseconds=flight2.duration))
+        flight2adate = (flight2ddate + timedelta(microseconds=flight2.duration))
     if round_trip:
         return render_template("book.html", 
             user = user,
