@@ -23,8 +23,8 @@ function padTo2Digits(num) {
   return num.toString().padStart(2, "0");
 }
 
-function convertMsToHM(milliseconds) {
-  let seconds = Math.floor(milliseconds / 1000);
+function convertMsToHM(microseconds) {
+  let seconds = Math.floor(microseconds / 1000000);
   let minutes = Math.floor(seconds / 60);
   let hours = Math.floor(minutes / 60);
 
