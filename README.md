@@ -3,7 +3,7 @@ This is an application that allow users to browse flight ticket options and book
 
 ![main page](images/main_page.png)
 
-**Deployment Address**: https://zgu-cpsc519.herokuapp.com/
+**Deployment Address**: https://zgu-cpsc519.herokuapp.com/ (No longer accessible because Heroku no longer offers free-tier account)
 
 ### Major Features
 - user account registration
